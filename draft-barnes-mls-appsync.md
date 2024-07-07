@@ -9,18 +9,18 @@ number:
 date:
 consensus: true
 v: 3
-area: AREA
-workgroup: MLS Working Group
+area: "Security"
+workgroup: "Messaging Layer Security"
 keyword:
  - messaging layer security
  - end-to-end encryption
 venue:
-  group: MLS 
-  type: Working Group
-  mail: mls@ietf.org
-  arch: https://mailarchive.ietf.org/arch/browse/mls/
-  github: bifurcation/mls-appsync
-  latest: https://example.com/LATEST
+  group: "Messaging Layer Security"
+  type: "Working Group"
+  mail: "mls@ietf.org"
+  arch: "https://mailarchive.ietf.org/arch/browse/mls/"
+  github: "bifurcation/mls-appsync"
+  latest: "https://bifurcation.github.io/mls-appsync/draft-barnes-mls-appsync.html"
 
 author:
  -
