@@ -113,6 +113,10 @@ Table of Contents
 
 3.  Application State Synchronization
 
+   This document defines a new AppSync proposal.  AppSync is a Safe
+   Extension as defined in Section 2 of [I-D.ietf-mls-extensions], of
+   type extension_external_proposal.
+
    The application_states extension allows the application to inject
    state objects into the MLS key schedule.  Changes to this state can
    be made out of band, or using the AppSync proposal.  Using the
@@ -265,10 +269,19 @@ Table of Contents
 
 5.  IANA Considerations
 
+      *TODO:* Register new extension and proposal types.
+
       *TODO:* IANA registry for application_id; register extension and
       proposal types as safe extensions
 
 6.  Normative References
+
+   [I-D.ietf-mls-extensions]
+              Robert, R., "The Messaging Layer Security (MLS)
+              Extensions", Work in Progress, Internet-Draft, draft-ietf-
+              mls-extensions-04, 24 April 2024,
+              <https://datatracker.ietf.org/doc/html/draft-ietf-mls-
+              extensions-04>.
 
    [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
               Requirement Levels", BCP 14, RFC 2119,
