@@ -73,6 +73,10 @@ Here, we define two extensions to MLS to facilitate this application design:
 
 # Application State Synchronization
 
+This document defines a new AppSync proposal. AppSync is a Safe Extension as
+defined in {{Section 2 of !I-D.ietf-mls-extensions}}, of type
+`extension_external_proposal`.
+
 The `application_states` extension allows the application to inject state
 objects into the MLS key schedule. Changes to this state can be made out of
 band, or using the AppSync proposal. Using the AppSync proposal ensures that
@@ -216,6 +220,8 @@ however, where it is useful for intermediaries to inspect application state
 updates, e.g., to enforce policy.
 
 # IANA Considerations
+
+> **TODO:** Register new extension and proposal types.
 
 > **TODO:** IANA registry for `application_id`; register extension and proposal types
 >as safe extensions
