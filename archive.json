@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2024-07-21T00:19:01.462678+00:00",
+  "timestamp": "2024-07-23T00:17:16.042093+00:00",
   "repo": "bifurcation/mls-appsync",
   "labels": [
     {
@@ -50,5 +50,32 @@
     }
   ],
   "issues": [],
-  "pulls": []
+  "pulls": [
+    {
+      "number": 1,
+      "id": "PR_kwDOMTH8rM52Bk9x",
+      "title": "remove the options for different structures of state",
+      "url": "https://github.com/bifurcation/mls-appsync/pull/1",
+      "state": "OPEN",
+      "author": "rohanmahy",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [],
+      "body": "While I was the original proponent of being able to make semantic changes inside an application-specific state-blob, the particulars of the different state types and patching procedures was a distraction from the overall concept of per-application state and the AppSync proposal.\r\n\r\nThis PR simply removes the inner-state semantics and assume each applicationId has an opaque state blob.\r\n",
+      "createdAt": "2024-07-21T22:28:27Z",
+      "updatedAt": "2024-07-21T22:28:27Z",
+      "baseRepository": "bifurcation/mls-appsync",
+      "baseRefName": "main",
+      "baseRefOid": "6a7ae5273a315692759690376be028053e442cdb",
+      "headRepository": "rohanmahy/mls-appsync",
+      "headRefName": "opaque-state",
+      "headRefOid": "e1970072b175d1917cbe0089517c9ade9e49a74f",
+      "closedAt": null,
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [],
+      "reviews": []
+    }
+  ]
 }
