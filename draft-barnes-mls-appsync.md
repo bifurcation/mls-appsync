@@ -1,5 +1,5 @@
 ---
-title: "Using Messaging Layer Security to Modify GroupContext Extensions"
+title: "Efficient Updates to Messaging Layer Security GroupContext Extensions"
 abbrev: "MLS GroupContext diffs"
 category: info
 
@@ -41,8 +41,8 @@ informative:
 
 One feature that the Messaging Layer Security (MLS) protocol provides is that it
 allows the members of a group to confirm that they agree on certain data.
-MLS includes a mechanism to modify this data (the GroupContext) all at once,
-but not to modify it individually. In this document, we define a mechanism
+MLS includes a mechanism to do a wholesale replacements of all GroupContext extensions,
+but not to modify individual extensions. In this document, we define a mechanism
 that allows implementations to add, update, and remove each element of the
 GroupContext individually. This also makes it practical for applications
 using MLS to exploit this feature of MLS to ensure that the group members
@@ -78,13 +78,12 @@ This document uses many terms from {{!RFC9420}}. Some of these have
 names which are similar or may be confusing: GroupContext, GroupContext
 extension, ExtensionType, and GroupContextExtensions proposal.
 
-# GroupContext extensions modification
+# GroupContextDiff
 
 This document defines a new GroupContextExtensionsDiff proposal. It
 is not a Safe Extension as defined in {{Section 2 of
 !I-D.ietf-mls-extensions}}, because it can modify any GroupContext
-extension, including those defined in {{!RFC9420}}. It is intended as a
-complete replacement for the GroupContextExtensions Proposal.
+extension, including those defined in {{!RFC9420}}.
 The GroupContextExtensionsDiff proposal does not require an UpdatePath,
 and may be sent by an authorized external sender.
 
@@ -131,9 +130,6 @@ be completely replaced with the new value in `extension_data`
 to the diff format defined by that extension. (Two concrete diff formats are
 defined in {{diff-formats}} which extension designers are free to use or
 not use.)
-
-
-## Processing rules
 
 A single GroupContextExtensionsDiff proposal can contain changes to multiple
 extensions. Likewise a single Commit can include multiple
