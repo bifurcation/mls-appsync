@@ -155,13 +155,72 @@ not supported by all group members is already forbidden by {{!RFC9420}}.
 
 # Diff Formats
 
-## List Diff Format
+The following two subsections define two Diff Formats for very common
+data structures.
 
-**TODO**
+Both of the Diff Formats defined below use the following struct for an
+opaque byte string.
+
+~~~ tls
+struct {
+  opaque element<V>;
+} OpaqueElement;
+~~~
+
 
 ## Map Diff Format
 
-**TODO**
+This Diff Format logically represents a map or dictionary that is not
+allowed to have duplicate map keys.
+
+~~~ tls
+struct {
+  opaque elementName<V>;
+  opaque elementValue<V>;
+} OpaqueMapElement;
+
+struct {
+      OpaqueElement removedKeys<V>;
+      OpaqueMapElement newOrUpdatedElements<V>;
+} MapDiff;
+~~~
+
+A diff using this format first removes all the keys in `removedKeys` and
+than replaces or adds the elements in `newOrUpdatedElements`.
+
+Removing a non-existant map key renders the diff and its proposal invalid.
+
+
+## List Diff Format
+
+This Diff Format logically represents changes to an ordered list.
+
+~~~ tls
+struct {
+  uint32 index;
+  opaque element<V>;
+} ElementWithIndex;
+
+struct {
+  ElementWithIndex replacedElements<V>;
+  uint32 removedIndices<V>;
+  ElementWithIndex insertedElements<V>;
+  OpaqueElement appendedEntries<V>;
+} ListDiff;
+~~~
+
+A diff using this format first replaces all the elements (index-by-index) in
+`replacedElements`, then the removes the elements in `removedIndices`
+according to the then order of the array, then inserts all the elements in
+`insertedElements` according to the then order of the array, then
+finally appends the `appendedEntries` (in order). All indices are zero-based.
+
+For the avoidance of doubt, two insertedElements with the same index will
+cause the second inserted element to be *before* the first inserted element.
+
+Attempting to insert or replace at a non-existing index renders the diff
+and its proposal invalid.
+
 
 # Previous draft contents
 
@@ -271,9 +330,7 @@ A client receiving an AppSync proposal applies it in the following way:
   object in `application_states` extension.
 
 An AppSync for an irreducible state replaces its `state` element with a new
-(possibly empty) `newState`. An AppSync for a map-based ApplicationState first
-removes all the keys in `removedKeys` and than replaces or adds the elements in
-`newOrUpdatedElements`. An AppSync for an unorderedList ApplicationState first
+(possibly empty) `newState`.  An AppSync for an unorderedList ApplicationState first
 removes all the indexes in `removedIndices`, then adds the elements in
 `addedEntries`. Finally an AppSync for an orderedArray, replaces all the
 elements (index-by-index) in `replacedElements`, the removes the elements in
