@@ -1239,7 +1239,7 @@ extension, ExtensionType, and GroupContextExtensions proposal.<a href="#section-
 <p id="section-3-1">This document defines a new GroupContextExtensionsDiff proposal. It
 is not a Safe Extension as defined in <span><a href="https://datatracker.ietf.org/doc/html/draft-ietf-mls-extensions-05#section-2" class="relref">Section 2</a> of [<a href="#I-D.ietf-mls-extensions" class="cite xref">I-D.ietf-mls-extensions</a>]</span>, because it can modify any GroupContext
 extension, including those defined in <span>[<a href="#RFC9420" class="cite xref">RFC9420</a>]</span>.
-The GroupContextExtensionsDiff proposal does not require an UpdatePath,
+The GroupContextExtensionsDiff proposal requires an UpdatePath,
 and may be sent by an authorized external sender.<a href="#section-3-1" class="pilcrow">¶</a></p>
 <div class="lang-tls sourcecode" id="section-3-2">
 <pre>
@@ -1415,7 +1415,7 @@ updates, e.g., to enforce policy.<a href="#section-5-2" class="pilcrow">¶</a></
         </h3>
 <p id="section-6.1-1">The <code>gce_diff</code> MLS Proposal Type is used to update Group Context Extensions
 in a group more efficiently than using a <code>group_context_extensions</code> proposal
-type. The <code>gce_update</code> type is updating rather than replacing the extensions.<a href="#section-6.1-1" class="pilcrow">¶</a></p>
+type. The <code>gce_diff</code> type is updating rather than replacing the extensions.<a href="#section-6.1-1" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="section-6.1-2.1">
             <p id="section-6.1-2.1.1">Value: 0x000d<a href="#section-6.1-2.1.1" class="pilcrow">¶</a></p>
@@ -1430,7 +1430,7 @@ type. The <code>gce_update</code> type is updating rather than replacing the ext
             <p id="section-6.1-2.4.1">External: Y<a href="#section-6.1-2.4.1" class="pilcrow">¶</a></p>
 </li>
           <li class="normal" id="section-6.1-2.5">
-            <p id="section-6.1-2.5.1">Path Required: N<a href="#section-6.1-2.5.1" class="pilcrow">¶</a></p>
+            <p id="section-6.1-2.5.1">Path Required: Y<a href="#section-6.1-2.5.1" class="pilcrow">¶</a></p>
 </li>
         </ul>
 </section>
