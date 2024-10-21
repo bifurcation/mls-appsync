@@ -1,6 +1,6 @@
 ---
-title: "Using Messaging Layer Security to Synchronize Application State"
-abbrev: "MLS AppSync"
+title: "Using Messaging Layer Security to Modify GroupContext Extensions"
+abbrev: "MLS GroupContext diffs"
 category: info
 
 docname: draft-barnes-mls-appsync-latest
@@ -40,12 +40,13 @@ informative:
 --- abstract
 
 One feature that the Messaging Layer Security (MLS) protocol provides is that it
-allows the members of a group to confirm that they agree on certain data.  In
-this document, we define a mechanism for applications using MLS to exploit this
-feature of MLS to ensure that the group members are in agreement on the state of
-the application in addition to MLS-related state.  We define a GroupContext
-extension that captures the state of the application and an AppSync proposal
-that can be used to update the application state.
+allows the members of a group to confirm that they agree on certain data.
+MLS includes a mechanism to modify this data (the GroupContext) all at once,
+but not to modify it individually. In this document, we define a mechanism
+that allows implementations to add, update, and remove each element of the
+GroupContext individually. This also makes it practical for applications
+using MLS to exploit this feature of MLS to ensure that the group members
+are in agreement on the state of the application in addition to MLS-related state.
 
 --- middle
 
@@ -60,22 +61,109 @@ communicate. Applications based on MLS can integrate their state into this
 metadata in order to confirm that the members of an MLS group agree on
 application state as well as MLS metadata.
 
-Here, we define two extensions to MLS to facilitate this application design:
+Unfortunately this state can only be modified using the
+GroupContextExtensions Proposal, which needs to include the entire
+GroupContext. This may include dozens of individual extensions and may be
+quite large. MLS clients should be able to modify orthogonal aspects of the
+GroupContext in separate Proposals and should not need to send large
+amounts of data for a small change.
 
-1. A GroupContext extension `application_states` that confirms agreement on
-   application state from potentially multiple sources.
-2. A new proposal type AppSync that allows MLS group members to propose changes
-   to the agreed application state.
+Here, we define a new MLS proposal type GroupContextExtensionsDiff. This proposal type allows modification on a per extension basis. It also allows GroupContext extensions to define simple diff formats (for example, to add, remove, and update elements in a list or items in a map).
 
 # Conventions and Definitions
 
 {::boilerplate bcp14-tagged}
 
-# Application State Synchronization
+This document uses many terms from {{!RFC9420}}. Some of these have
+names which are similar or may be confusing: GroupContext, GroupContext
+extension, ExtensionType, and GroupContextExtensions proposal.
 
-This document defines a new AppSync proposal. AppSync is a Safe Extension as
-defined in {{Section 2 of !I-D.ietf-mls-extensions}}, of type
-`extension_external_proposal`.
+# GroupContext extensions modification
+
+This document defines a new GroupContextExtensionsDiff proposal. It
+is not a Safe Extension as defined in {{Section 2 of
+!I-D.ietf-mls-extensions}}, because it can modify any GroupContext
+extension, including those defined in {{!RFC9420}}. It is intended as a
+complete replacement for the GroupContextExtensions Proposal.
+The GroupContextExtensionsDiff proposal does not require an UpdatePath,
+and may be included in external proposals.
+
+~~~ tls
+enum {
+    remove(0),
+    add(1),
+    replace(2),
+    diff(3),
+    (255)
+} OperationType;
+
+uint8 DiffType;
+
+struct {
+    ExtensionType group_context_extension;
+    OperationType operation;
+    select (operation) {
+        case remove:
+            struct {};
+        case add:
+            opaque extension_data<V>;
+        case replace:
+            opaque extension_data<V>;
+        case diff:
+            opaque diff_data<V>;
+    };
+} ExtensionDiff;
+
+struct {
+    ExtensionDiff group_context_extension_diffs<V>;
+} GroupContextExtensionsDiff;
+~~~
+
+The semantics of OperationType are as follows:
+
+- `remove` means that the GroupContext extension was present, and will be
+completely absent from the GroupContext.
+- `add` means that the GroupContext extension was absent, and will be
+present with the value provided in `extension_data`.
+- `replace` means that the GroupContext extension was present and will
+be completely replaced with the new value in `extension_data`
+- `diff` means that the GroupContext extension will be modified according
+to the diff format defined by that extension. (Two concrete diff formats are
+defined in {{diff-formats}} which extension designers are free to use or
+not use.)
+
+
+## Processing rules
+
+A single GroupContextExtensionsDiff proposal can contain changes to multiple
+extensions. Likewise a single Commit can include multiple
+GroupContextExtensionsDiff proposals, however a single Commit MUST NOT
+include multiple GroupContextExtensionsDiff proposals which refer to the
+same ExtensionType. A GroupContextExtensions proposal MUST NOT appear in a
+commit with any GroupContextExtensionsDiff proposal.
+
+The motivation for allowing multiple extensions in a single
+GroupContextExtensionsDiff proposal is to allow a client to modify multiple
+extensions in a single "transaction". A common example of this is to add a
+GroupContext extension while also adding that extension to the
+`required_capabilities` GroupContext extension.
+
+A proposal which removes a GroupContext extension that is present in the
+`required_capabilities` list is invalid. Adding a required capability that is
+not supported by all group members is already forbidden by {{!RFC9420}}.
+
+
+# Diff Formats
+
+## List Diff Format
+
+**TODO**
+
+## Map Diff Format
+
+**TODO**
+
+# Previous draft contents
 
 The `application_states` extension allows the application to inject state
 objects into the MLS key schedule. Changes to this state can be made out of
@@ -205,15 +293,18 @@ applied in the order that they are sent in the Commit.
 AppSync proposals do not need to contain an UpdatePath. An AppSync proposal can
 be sent by an authorized external sender.
 
+
+
 # Security Considerations
 
 The mechanism defined in this document provides strong authenticity, integrity,
-and change control properties to the application state information it manages.
-Nobody outside the group can make changes to the application state, and the
+and change control properties to the state information it manages.
+No unauthorized parties can make changes to the GroupContext, and the
 identity of the group member making each change is authenticated.
 
-The application data synchronized via this mechanism may or may not be
-confidential to the group, depending on whether the AppSync proposal is sent as
+The data synchronized via this mechanism may or may not be confidential to
+the group, depending on whether the GroupContextExtensionsDiff proposal is
+sent as
 an MLS PublicMessage or PrivateMessage.  As with application data, applications
 should generally prefer the use of Private Message.  There may be cases,
 however, where it is useful for intermediaries to inspect application state
@@ -221,10 +312,47 @@ updates, e.g., to enforce policy.
 
 # IANA Considerations
 
-> **TODO:** Register new extension and proposal types.
+## GroupContextExtensionDiff Proposal
 
-> **TODO:** IANA registry for `application_id`; register extension and proposal types
->as safe extensions
+The `gce_diff` MLS Proposal Type is used to update Group Context Extensions
+in a group more efficiently than using a `group_context_extensions` proposal
+type. The `gce_update` type is updating rather than replacing the extensions.
+
+* Value: 0x000d
+* Name: gce_diff
+* Recommended: Y
+* External: Y
+* Path Required: N
+
+## Change to the MLS Extension Types registry
+
+This document adds a "Diff" column to the MLS Extension Types registry. In
+the registration template this will be referred to as "Diff Type". The value
+value can be "-" indicating no Diff Types are supported, or a value present
+in the GroupContext Diff Types registry.
+
+## GroupContext Diff Types registry
+
+The "MLS GroupContext Diff Types" registry lists identifiers for types of
+difference algorithms to be applied to GroupContext extension data. The
+diff type field is one byte wide, so valid values are in the range 0x00 to
+0xFF.
+
+Template:
+
+- Value: The numeric value of the diff type
+- Name:  The name of the diff type
+- Recommended: Same as in Section 17.1 of {{!RFC9420}}
+- Reference: The document where this extensions is defined
+
+Initial contents:
+
+| Value | Name     | R | Ref      |
+|-------+----------+---+----------|
+| 0x00  | reserved | - | RFC XXXX |
+| 0x01  | list     | Y | RFC XXXX |
+| 0x02  | map      | Y | RFC XXXX |
+
 
 --- back
 
