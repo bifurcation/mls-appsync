@@ -86,7 +86,7 @@ is not a Safe Extension as defined in {{Section 2 of
 extension, including those defined in {{!RFC9420}}. It is intended as a
 complete replacement for the GroupContextExtensions Proposal.
 The GroupContextExtensionsDiff proposal does not require an UpdatePath,
-and may be included in external proposals.
+and may be sent by an authorized external sender.
 
 ~~~ tls
 enum {
@@ -220,136 +220,6 @@ cause the second inserted element to be *before* the first inserted element.
 
 Attempting to insert or replace at a non-existing index renders the diff
 and its proposal invalid.
-
-
-# Previous draft contents
-
-The `application_states` extension allows the application to inject state
-objects into the MLS key schedule. Changes to this state can be made out of
-band, or using the AppSync proposal. Using the AppSync proposal ensures that
-members of the MLS group have received the relevant state changes before they
-are reflected in the group's `application_states`.
-
-> **NOTE:** This design exposes the high-level structure of the application state
-> to MLS.  An alternative design would be to have the application state be opaque
-> to MLS.  There is a trade-off between generality and the complexity of the API
-> between the MLS implementation and the application.  An opaque design would give
-> the application more freedom, but require the MLS stack to call out to the
-> application to get the updated state as part of Commit processing.  This design
-> allows the updates to happen within the MLS stack, so that no callback is
-> needed, at the cost of forcing the application state to fit a certain structure.
-> It also potentially can result in smaller state updates in large groups.
-
-The state for Each `applicationId` in the `application_states` needs to conform
-to one of four basic types: an ordered array, an unordered array, a map, or an
-irreducible blob. This allows the AppSync proposal to efficiently modify a large
-application state object.
-
-The content of the `application_states` extension and the `AppSync` proposal are
-structured as follows:
-
-~~~ tls
-enum {
-    irreducible(0),
-    map(1),
-    unorderedList(2),
-    orderedArray(3),
-    (255)
-} StateType;
-
-struct {
-  opaque element<V>;
-} OpaqueElement;
-
-struct {
-  opaque elementName<V>;
-  opaque elementValue<V>;
-} OpaqueMapElement;
-
-struct {
-  uint32 applicationId;
-  StateType stateType;
-  select (stateType) {
-    case irreducible:
-      OpaqueElement state;
-    case map:
-      OpaqueMapElement mapEntries<V>;
-    case unorderedList:
-      OpaqueElement unorderedEntries<V>;
-    case orderedArray:
-      OpaqueElement orderedEntries<V>;
-  };
-} ApplicationState;
-
-struct {
-  ApplicationState applicationStates<V>;
-} ApplicationStatesExtension;
-~~~
-{: #fig-app-state title="The `application_state` extension" }
-
-~~~ tls
-struct {
-  uint32 index;
-  opaque element<V>;
-} ElementWithIndex;
-
-
-struct {
-  uint32 applicationId;
-  StateType stateType;
-  select (stateType) {
-    case irreducible:
-      OpaqueElement newState;
-    case map:
-      OpaqueElement removedKeys<V>;
-      OpaqueMapElement newOrUpdatedElements<V>;
-    case unorderedList:
-      uint32 removedIndices<V>;
-      OpaqueElement addedEntries<V>;
-    case orderedArray:
-      ElementWithIndex replacedElements<V>;
-      uint32 removedIndices<V>;
-      ElementWithIndex insertedElements<V>;
-      OpaqueElement appenededEntries<V>;
-  };
-} AppSync;
-~~~
-{: #fig-app-sync title="The AppSync proposal type" }
-
-The `applicationId` determines the structure and interpretation of the contents.
-of an ApplicationState object. AppSync proposals
-contain changes to this state, which the client uses to update the
-representation of the state in `application_states`.
-
-A client receiving an AppSync proposal applies it in the following way:
-
-* Identify an `application_states` GroupContext extension which contains the
-  same `application_id` state as the AppSync proposal
-* Apply the relevant operations (replace, remove, update, append, insert)
-  according to the `stateType` to the relevant parts of the ApplicationState
-  object in `application_states` extension.
-
-An AppSync for an irreducible state replaces its `state` element with a new
-(possibly empty) `newState`.  An AppSync for an unorderedList ApplicationState first
-removes all the indexes in `removedIndices`, then adds the elements in
-`addedEntries`. Finally an AppSync for an orderedArray, replaces all the
-elements (index-by-index) in `replacedElements`, the removes the elements in
-`removedIndices` according to the then order of the array, then inserts all the
-elements in `insertedElements` according to the then order of the array, then
-finally appends the `appendedEntries` (in order). All indices are zero-based.
-
-Note that the `application_states` extension is updated directly by AppSync
-proposals; a GroupContextExtensions proposal is not necessary. A proposal list
-that contains both an AppSync proposal and a GroupContextExtensions proposal
-is invalid.
-
-Likewise a proposal list in a Commit MAY contain more than one AppSync proposal,
-but no more than one AppSync proposal per `applicationId`. The proposals are
-applied in the order that they are sent in the Commit.
-
-AppSync proposals do not need to contain an UpdatePath. An AppSync proposal can
-be sent by an authorized external sender.
-
 
 
 # Security Considerations
