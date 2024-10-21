@@ -84,7 +84,7 @@ This document defines a new GroupContextExtensionsDiff proposal. It
 is not a Safe Extension as defined in {{Section 2 of
 !I-D.ietf-mls-extensions}}, because it can modify any GroupContext
 extension, including those defined in {{!RFC9420}}.
-The GroupContextExtensionsDiff proposal does not require an UpdatePath,
+The GroupContextExtensionsDiff proposal requires an UpdatePath,
 and may be sent by an authorized external sender.
 
 ~~~ tls
@@ -239,13 +239,13 @@ updates, e.g., to enforce policy.
 
 The `gce_diff` MLS Proposal Type is used to update Group Context Extensions
 in a group more efficiently than using a `group_context_extensions` proposal
-type. The `gce_update` type is updating rather than replacing the extensions.
+type. The `gce_diff` type is updating rather than replacing the extensions.
 
 * Value: 0x000d
 * Name: gce_diff
 * Recommended: Y
 * External: Y
-* Path Required: N
+* Path Required: Y
 
 ## Change to the MLS Extension Types registry
 
