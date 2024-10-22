@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2024-10-20T00:21:47.201834+00:00",
+  "timestamp": "2024-10-22T00:20:07.072209+00:00",
   "repo": "bifurcation/mls-appsync",
   "labels": [
     {
@@ -58,7 +58,7 @@
       "url": "https://github.com/bifurcation/mls-appsync/pull/1",
       "state": "OPEN",
       "author": "rohanmahy",
-      "authorAssociation": "NONE",
+      "authorAssociation": "COLLABORATOR",
       "assignees": [],
       "labels": [],
       "body": "While I was the original proponent of being able to make semantic changes inside an application-specific state-blob, the particulars of the different state types and patching procedures was a distraction from the overall concept of per-application state and the AppSync proposal.\r\n\r\nThis PR simply removes the inner-state semantics and assume each applicationId has an opaque state blob.\r\n",
@@ -76,6 +76,235 @@
       "mergeCommit": null,
       "comments": [],
       "reviews": []
+    },
+    {
+      "number": 2,
+      "id": "PR_kwDOMTH8rM5_XAvc",
+      "title": "First stab at GroupContextExtensionsDiff",
+      "url": "https://github.com/bifurcation/mls-appsync/pull/2",
+      "state": "CLOSED",
+      "author": "rohanmahy",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "",
+      "createdAt": "2024-10-21T18:18:16Z",
+      "updatedAt": "2024-10-21T20:31:47Z",
+      "baseRepository": "bifurcation/mls-appsync",
+      "baseRefName": "main",
+      "baseRefOid": "6a7ae5273a315692759690376be028053e442cdb",
+      "headRepository": "bifurcation/mls-appsync",
+      "headRefName": "gcediff",
+      "headRefOid": "c79419f75615ee3228dca8597a289d93e7698ceb",
+      "closedAt": "2024-10-21T20:31:46Z",
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [
+        {
+          "author": "rohanmahy",
+          "authorAssociation": "COLLABORATOR",
+          "body": "Posted instead as separate document: draft-mahy-mls-gce-diff-00\r\n\r\nRichard will write up an application-state specific change that is complimentary",
+          "createdAt": "2024-10-21T20:31:46Z",
+          "updatedAt": "2024-10-21T20:31:46Z"
+        }
+      ],
+      "reviews": [
+        {
+          "id": "PRR_kwDOMTH8rM6OCrOy",
+          "commit": {
+            "abbreviatedOid": "588c707"
+          },
+          "author": "bifurcation",
+          "authorAssociation": "OWNER",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2024-10-21T18:49:46Z",
+          "updatedAt": "2024-10-21T19:17:36Z",
+          "comments": [
+            {
+              "originalPosition": 4,
+              "body": "```suggestion\r\ntitle: \"Efficient Updates to Messaging Layer Security GroupContext Extensions\"\r\n```",
+              "createdAt": "2024-10-21T18:49:46Z",
+              "updatedAt": "2024-10-21T19:17:36Z"
+            },
+            {
+              "originalPosition": 19,
+              "body": "I would rephrase as \r\n\r\n> The Messaging Layer Security (MLS) protocol allows the members of the group to agree on a set of GroupContext extensions.",
+              "createdAt": "2024-10-21T18:51:58Z",
+              "updatedAt": "2024-10-21T19:17:36Z"
+            },
+            {
+              "originalPosition": 21,
+              "body": "```suggestion\r\nMLS includes a mechanism to do a wholesale replacements of all GroupContext extensions,\r\nbut not to modify individual extensions. In this document, we define a mechanism\r\n```",
+              "createdAt": "2024-10-21T18:53:15Z",
+              "updatedAt": "2024-10-21T19:17:36Z"
+            },
+            {
+              "originalPosition": 54,
+              "body": "It might be helpful to include a brief definition list:\r\n\r\n> * **GroupContext:** The state of the group agreed on in a given epoch\r\n> * **GroupContext extension:** A (type, value) tuple included in the GroupContext\r\n> * **ExtensionType:** A two-byte identifier for the type of a GroupContext extension\r\n> * **GroupContextExtensions proposal:** A proposal to remove all of the extensions in the group's GroupContext and replace them with a new set of GroupContext extensions\r\n> \r\n> Currently, the GroupContextExtensions proposal is the only mechanism defined for updating a group's GroupContext extensions.",
+              "createdAt": "2024-10-21T18:58:04Z",
+              "updatedAt": "2024-10-21T19:17:36Z"
+            },
+            {
+              "originalPosition": 59,
+              "body": "```suggestion\r\n# GroupContextDiff\r\n```\r\n\r\nIn parallel with the section headings in [Section 12.1 of RFC 9420](https://rfcs.online/rfcs/rfc9420.html#name-proposals).",
+              "createdAt": "2024-10-21T18:59:00Z",
+              "updatedAt": "2024-10-21T19:17:36Z"
+            },
+            {
+              "originalPosition": 88,
+              "body": "It doesn't necessarily replace the GCE proposal.  They can coexist.  This one is just more capable.  I think you can just delete this sentence.",
+              "createdAt": "2024-10-21T18:59:54Z",
+              "updatedAt": "2024-10-21T19:17:36Z"
+            },
+            {
+              "originalPosition": 89,
+              "body": "GCE requires an UpdatePath, and this is strictly stronger than GCE, so it seems like it has to require an UpdatePath.",
+              "createdAt": "2024-10-21T19:01:02Z",
+              "updatedAt": "2024-10-21T19:17:36Z"
+            },
+            {
+              "originalPosition": 162,
+              "body": "This section needs to specify the structure of the extensions as well, so that it's clear how the diffs are applied.  My guess is that what you want is something like:\r\n\r\n```\r\nopaque Opaque<V>;\r\n\r\nstruct {\r\n    Opaque key;\r\n    Opaque value;\r\n} KeyValuePair;\r\n\r\n\r\nValue VectorExtension<V>;\r\nKeyValuePair KeyValueExtension<V>;\r\n```",
+              "createdAt": "2024-10-21T19:11:01Z",
+              "updatedAt": "2024-10-21T19:17:36Z"
+            },
+            {
+              "originalPosition": 142,
+              "body": "This doesn't need to be a subsection.  I would follow the same structure as [GCE](https://rfcs.online/rfcs/rfc9420.html#name-groupcontextextensions), \"A member of the group applies a GroupContextExtensionDiff proposal with the following steps:\".  That can incorporate the OperationType discussion above as well.",
+              "createdAt": "2024-10-21T19:15:01Z",
+              "updatedAt": "2024-10-21T19:17:36Z"
+            },
+            {
+              "originalPosition": 109,
+              "body": "```suggestion\r\n    ExtensionType extension_type;\r\n```\r\n\r\nOne potential difficulty here that you should probably just note for now: I'm pretty sure that there's nothing in MLS right now that says that there can only be one extension per `ExtensionType` in the GroupContext.  If there were duplicates, this would be ambiguous.  You could fix this with something dumb like (a) defining a `noop` OperationType and (b) saying that the n-th ExtensionDiff of a given type affects the n-th entry.  That has the benefit of degrading to the normal thing in the sane case. ",
+              "createdAt": "2024-10-21T19:17:33Z",
+              "updatedAt": "2024-10-21T19:17:36Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOMTH8rM6OC6mZ",
+          "commit": {
+            "abbreviatedOid": "588c707"
+          },
+          "author": "rohanmahy",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2024-10-21T19:22:55Z",
+          "updatedAt": "2024-10-21T19:22:56Z",
+          "comments": [
+            {
+              "originalPosition": 88,
+              "body": "```suggestion\r\nextension, including those defined in {{!RFC9420}}.\r\n```",
+              "createdAt": "2024-10-21T19:22:55Z",
+              "updatedAt": "2024-10-21T19:22:56Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOMTH8rM6OC745",
+          "commit": {
+            "abbreviatedOid": "588c707"
+          },
+          "author": "rohanmahy",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2024-10-21T19:26:05Z",
+          "updatedAt": "2024-10-21T19:26:05Z",
+          "comments": [
+            {
+              "originalPosition": 89,
+              "body": "That was listed as one of the reasons why GCE was broken AFAIK. ",
+              "createdAt": "2024-10-21T19:26:05Z",
+              "updatedAt": "2024-10-21T19:26:06Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOMTH8rM6ODHis",
+          "commit": {
+            "abbreviatedOid": "588c707"
+          },
+          "author": "rohanmahy",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2024-10-21T19:53:34Z",
+          "updatedAt": "2024-10-21T19:53:35Z",
+          "comments": [
+            {
+              "originalPosition": 142,
+              "body": "```suggestion\r\n```",
+              "createdAt": "2024-10-21T19:53:34Z",
+              "updatedAt": "2024-10-21T19:53:35Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOMTH8rM6ODIZN",
+          "commit": {
+            "abbreviatedOid": "8676d10"
+          },
+          "author": "rohanmahy",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2024-10-21T19:55:36Z",
+          "updatedAt": "2024-10-21T19:55:37Z",
+          "comments": [
+            {
+              "originalPosition": 88,
+              "body": "```suggestion\r\nThe GroupContextExtensionsDiff proposal requires an UpdatePath,\r\n```",
+              "createdAt": "2024-10-21T19:55:37Z",
+              "updatedAt": "2024-10-21T19:55:37Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOMTH8rM6ODIkY",
+          "commit": {
+            "abbreviatedOid": "8676d10"
+          },
+          "author": "rohanmahy",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2024-10-21T19:56:03Z",
+          "updatedAt": "2024-10-21T19:56:03Z",
+          "comments": [
+            {
+              "originalPosition": 329,
+              "body": "```suggestion\r\n* Path Required: Y\r\n```",
+              "createdAt": "2024-10-21T19:56:03Z",
+              "updatedAt": "2024-10-21T19:56:03Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOMTH8rM6ODIry",
+          "commit": {
+            "abbreviatedOid": "8676d10"
+          },
+          "author": "rohanmahy",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2024-10-21T19:56:18Z",
+          "updatedAt": "2024-10-21T19:56:18Z",
+          "comments": [
+            {
+              "originalPosition": 323,
+              "body": "```suggestion\r\ntype. The `gce_diff` type is updating rather than replacing the extensions.\r\n```",
+              "createdAt": "2024-10-21T19:56:18Z",
+              "updatedAt": "2024-10-21T19:56:18Z"
+            }
+          ]
+        }
+      ]
     }
   ]
 }
