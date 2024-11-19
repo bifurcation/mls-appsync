@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2024-11-17T00:22:22.870813+00:00",
+  "timestamp": "2024-11-19T00:20:54.173606+00:00",
   "repo": "bifurcation/mls-appsync",
   "labels": [
     {
@@ -63,7 +63,7 @@
       "labels": [],
       "body": "While I was the original proponent of being able to make semantic changes inside an application-specific state-blob, the particulars of the different state types and patching procedures was a distraction from the overall concept of per-application state and the AppSync proposal.\r\n\r\nThis PR simply removes the inner-state semantics and assume each applicationId has an opaque state blob.\r\n",
       "createdAt": "2024-07-21T22:28:27Z",
-      "updatedAt": "2024-07-21T22:28:27Z",
+      "updatedAt": "2024-11-18T23:12:12Z",
       "baseRepository": "bifurcation/mls-appsync",
       "baseRefName": "main",
       "baseRefOid": "6a7ae5273a315692759690376be028053e442cdb",
@@ -75,7 +75,21 @@
       "mergedBy": null,
       "mergeCommit": null,
       "comments": [],
-      "reviews": []
+      "reviews": [
+        {
+          "id": "PRR_kwDOMTH8rM6Rq7n1",
+          "commit": {
+            "abbreviatedOid": "e197007"
+          },
+          "author": "bifurcation",
+          "authorAssociation": "OWNER",
+          "state": "APPROVED",
+          "body": "This looks good to me.  Sorry for the very late review.\r\n\r\nThis is the right direction to go in: Keep the application data in the hands of the application.  It doesn't affect the cryptographic processes, so MLS shouldn't care about the structure of it.\r\n\r\nTwo minor addenda, that can be discussed as follow-ons:\r\n\r\n1. I might propose that we go even simpler here, and make the entire state opaque, as opposed to a key/value map of opaque.  This would have the advantage of a super simple MLS API (just `set_state()` and `get_state()`), and the key/value map thingy could be defined as an optional structure in an extension.\r\n\r\n2. Right now, the ApplicationState proposal is a wholesale replacement of the state for a given `app_id`.  This could be expensive when the state is large.  Instead, we should allow the application to send diffs.  This will require a slightly different structure and an additional message to say \"here's the final state\".  I have a design in mind, which I'll file as a follow-on once we merge this PR.",
+          "createdAt": "2024-11-18T23:12:12Z",
+          "updatedAt": "2024-11-18T23:12:12Z",
+          "comments": []
+        }
+      ]
     },
     {
       "number": 2,
