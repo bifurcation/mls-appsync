@@ -106,6 +106,10 @@ groups.
 Application component:
 : A subsystem of an application that has access to an MLS group.
 
+Component ID:
+: An identifier for an application component.  These identifiers are assigned by
+the application.
+
 # Protocol Overview
 
 The mechansms in this document take MLS mechanisms that are either not
@@ -128,38 +132,194 @@ from each other:
   being exported, so that different components will get different exported
   values.
 
-Application components can use these functions to create advanced security
-services.  The signing and public-key encryption functions, for example, could
-be used to create a simple facility for authenticated one-to-one messaging
-within a group.  An application might export different values for encrypting
-real-time media with with SFrame {{?RFC9605}}, or for encrypting information
-that is not expected to be forward-secret within in epoch (e.g., a room title).
+We also define two new general mechanisms that allow applications to take
+advantage of the state agreement properties of MLS:
 
-Pre-shared keys are an especially flexible facility.  The PreSharedKeyID
-structure used to signal the use of a PSK in a Proposal or Welcome message can
-carry arbitary application data (in the `psk_id` field for `external` PSKs).
-Since both the PreSharedKeyID and the secret PSK value are incorporated into the
-MLS key schedule, PSKs can be used to incorporate application data into the MLS
-key schedule, so that the continued functioning of the MLS group confirms that
-the entire group agrees on the application data.
+- An ApplicationData proposal type that enables arbitrary application data to
+  be associated to a Commit.
 
-For example, suppose an application component wanted to confirm the group's
-agreement on an application-level policy document before enforcing the policy.
-The application component wishing to update the policy could cause a Commit to
-be emitted that includes a PreSharedKey proposal whose PreSharedKeyID contains
-the new policy (with a arbitrary application defined PreSharedKey secret,
-possibly empty).  When another member successfully processes this commit, the
-corresponding application component at that member would see that the PSK
-proposal had confirmed agreement the new application policy, and put the policy
-into force.
+- An `application_state` group context extension that associates application
+  state with an epoch of the group.
+
+As with the above, information carried in these proposals and extension marked
+as belonging to a specific application component, so that components can manage
+their information independently.
+
+The separation between components is acheived by the application assigning each
+component a unique component ID number.  These numbers are then incorporated
+into the appopriate calculations in the protocol to achieve the required
+separation.
 
 # Application Component Interface
 
+## Component IDs
+
+A component ID is a four-byte value that uniquely identifies a component within
+the scope of an application.
+
+```
+uint32 ComponentID;
+```
+
+> TODO: What are the uniqueness requirements on these?  It seems like the more
+> diversity, the better.  For example, if a ComponentID is reused across
+> applications (e.g., via an IANA registry), then there will be a risk of replay
+> across applications.  Maybe we should include a binder to the group/epoch as
+> well, something derived from the key schedule.
+
+## Hybrid Public Key Encryption (HPKE) Keys
+
+## Signature Keys
+
+## Pre-Shared Keys
+
+## Exported Secrets
+
+## Application Data Proposal
+
+The ApplicationData proposal type allows an application component to send
+application data that will be associated the Commit that applies the propsal.
+Since MLS Commits already provide a synchronization point for one aspect of the
+applicaiton (the MLS-level membership), this mechanism allows the application to
+use MLS proposals to synchronize the group on other aspects of the application.
+
+```
+struct {
+    ComponentID component_id;
+    opaque application_data<V>;
+} ApplicationData;
+```
+
+An ApplicationData proposal is invalid if its `component_id` references a
+component that is not known to the application.
+
+> TODO: Do we need an `application_components` extension or something so that
+> the MLS stack can do this filtering?
+
+ApplicationData proposals are processed after any default proposals (i.e., those
+defined in {{RFC9420}}), but before any ApplicationStateUpdate proposals.
+
+A client applies an ApplicationData proposal by providing the contents of the
+`application_data` field to the component identified by the `component_id`.  If
+a Commit references more than one ApplicationData proposal for the same
+`component_id` value, then they MUST be processed in the order in which they are
+specified in the Commit.
+
+## Application State Agreement
+
+### The `application_state` Extension
+
+The `application_state` extension is a group context extension that stores a
+representation of application components' state.  Its contents are managed by
+the ApplicationStateUpdate proposal, as specified in {{applicationstateupdate}}.
+
+```
+struct {
+    ComponentID component_id;
+    opaque state<V>;
+} ComponentState;
+
+struct {
+    ComponentState component_states<V>;
+} ApplicationState;
+```
+
+The entries in the `component_states` vector MUST be sorted by `component_id` in
+numerically ascending order.  There MUST NOT be more than one entry per
+`component_id`.
+
+The `application_state` extension MUST always be the last extension in the
+`extensions` list in the GroupContext.
+
+### ApplicationStateUpdate
+
+An ApplicationData proposal allows an application component to send application
+data that will be associated the Commit that applies the propsal.  Since MLS
+Commits already provide a synchronization point for one aspect of the
+applicaiton (the MLS-level membership), this mechanism allows the application to
+use MLS proposals to synchronize the group on other aspects of the application.
+
+```
+enum {
+    invalid(0),
+    set(1),
+    remove(2),
+    (255)
+} ApplicationStateUpdateOperation;
+
+struct {
+    ComponentID component_id;
+    ApplicationStateUpdateOperation op;
+
+    select (ApplicationStateUpdate.op) {
+        case set: opaque new_state<V>;
+        case remove: struct{}
+    }
+} ApplicationStateUpdate;
+```
+
+An ApplicationStateUpdate proposal is invalid if its `component_id` references a
+component that is not known to the application, or if it specifies the removal
+of state for a `component_id` that has no state present.  A proposal list is
+invalid if it includes multiple ApplicationStateUpdate proposals referencing the
+same `component_id`.
+
+> TODO: See above comment about the MLS stack enforcing "known to the
+> application.
+
+> TODO: Deconflict with GroupContextExtensions.
+
+ApplicationStateUpdate proposals are processed after any default proposals (i.e., those
+defined in {{RFC9420}}), and any ApplicationData proposals.
+
+A client applies an ApplicationStateUpdate proposal by changing the contents of
+the `application_state` extension associated to its local copy of the
+GroupContext for the group.
+
+* If no `application_state` extension is present in the GroupContext, add one to
+  the end of the `extensions` list in the GroupContext.
+
+* If the `op` field is set to `set`:
+    
+    * If there is an entry in the `component_states` vector in the
+      `application_state` extension with the specified `component_id`, then set
+      its `state` field to the specified `new_state`.
+
+    * Otherwise, insert a new entry in the `component_states` vector with the
+      specified `component_id` and the `state` field set to the `new_state`
+      value.  The new entry is inserted at the proper point to keep the
+      `component_states` vector sorted by `component_id`.
+
+* If the `op` field is set to `remove`:
+
+    * If there is an entry in the `component_states` vector in the
+      `application_state` extension with the specified `component_id`, remove
+      it.
+
+    * Otherwise, the proposal is invalid.
 
 # Security Considerations
 
+The API defined in this document provides the following security guarantee: If
+an application uses MLS and all its components use this API, then the security
+guarantees of the base MLS protocol and the security guarantees of the
+components, each analyzed in isolation, still hold for the composed protocol. In
+other words, the API protects applications from careless
+component developers. As long as all the components use this API, it is not
+possible that some combination of components  (the developers of which did not know
+about each other) impedes the security of the base MLS protocol or any used
+component. No further analysis of the combination is necessary. This also means
+that any security vulnerabilities introduced by one component do not spread to
+other component or the base MLS protocol.
+
 # IANA Considerations
 
+TODO: 
+
+* Register ApplicationData proposal
+* Register ApplicationStateUpdate proposal
+* Register application_state extension
+* Create component ID registry?
 
 # ========= OLD CONTENT BELOW THIS LINE ==========
 
