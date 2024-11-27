@@ -1,6 +1,6 @@
 ---
-title: "Using Messaging Layer Security to Synchronize Application State"
-abbrev: "MLS AppSync"
+title: "An Application Interface to Messaging Layer Security"
+abbrev: "MLS App API"
 category: info
 
 docname: draft-barnes-mls-appsync-latest
@@ -39,15 +39,129 @@ informative:
 
 --- abstract
 
-One feature that the Messaging Layer Security (MLS) protocol provides is that it
-allows the members of a group to confirm that they agree on certain data.  In
-this document, we define a mechanism for applications using MLS to exploit this
-feature of MLS to ensure that the group members are in agreement on the state of
-the application in addition to MLS-related state.  We define a GroupContext
-extension that captures the state of the application and an AppSync proposal
-that can be used to update the application state.
+The Messaging Layer Security protocol enables a group of participants to
+negotiate a common cryptographic state.  While the primary function of MLS is to
+establish shared secret state for the group, an MLS group also captures
+authentication information for group participants and information on which the
+group has confirmed agreement.  This document defines an interface interface by
+which multiple uncoordinated application functions may safely reuse the
+cryptographic state of an MLS group for application purposes.
 
 --- middle
+
+# Introduction
+
+The Messaging Layer Security protocol (MLS) is designed to be integrated into
+applications, in order to provide security services that the application
+requires {{!RFC9420}}.  There are two questions to answer when designing such an
+integration:
+
+1. How does the application provide the services that MLS requires?
+2. How does the application use MLS to get security benefits?
+
+The MLS Architecture describes the requirements for the first of these questions
+{{?I-D.mls-architecture}}, namely the structure of the Delivery Service and
+Authentication Service that MLS requires.  This document is focused on the
+second question.
+
+MLS itself offers some basic functions that applications can use, such as the
+secure message encapsulation (PrivateMessage), the MLS exporter, and the epoch
+authenticator.  Current MLS applications make use of these mechanisms to acheive
+a variety of confidentiality and authentication properties.
+
+As application designers become more familiar with MLS, there is increasing
+interest in leveraging otehr cryptographic tools that an MLS group provides:
+
+- HPKE and signature key pairs for each member, where the private key is known
+  only to that member, and the public key is authenticated to the other members.
+
+- A pre-shared key mechanism that can allow an application to inject data into
+  the MLS key schedule.
+
+- An exporter mechanism that allows applications to derive secrets from the MLS
+  key schedule.
+
+There is also interest in exposing an MLS group to multiple loosely-coordinated
+components of an application.  To support these use cases, there is a need for a
+mechanism that provides application components access to MLS's cryptographic
+tools in a way that ensure that different components' usage will not conflict
+with each other, or with MLS itself.
+
+This document defines a set of mechanisms that application components can use to
+ensure that their use of these facilities is properly domain-separated from MLS
+itself, and from other application components that might be using the same MLS
+group.
+
+# Conventions and Definitions
+
+{::boilerplate bcp14-tagged}
+
+We make heavy use of the terminology in the MLS specification {{!RFC9420}}.
+
+Application:
+: The system that instantiates, manages, and uses an MLS group.  Each MLS group
+is used by exactly one application, but an application may maintain multiple
+groups.
+
+Application component:
+: A subsystem of an application that has access to an MLS group.
+
+# Protocol Overview
+
+The mechansms in this document take MLS mechanisms that are either not
+inherently designed to be used by applications, or not inherently designed to be
+used by multiple application components, and adds a domain separator that
+separates application usage from MLS usage, and application components' usage
+from each other:
+
+- Signing operations are tagged so that signatures will only verify in the
+  context of a given component.
+
+- Public-key encryption operations are similarly tagged so that encrypted data
+  will only decrypt in the context of a given component.
+
+- Pre-shared keys are identified as originating from a specific component, so
+  that differnet components' contributions to the MLS key schedule will not
+  collide.
+
+- Exported values include an identifier for the component to which they are
+  being exported, so that different components will get different exported
+  values.
+
+Application components can use these functions to create advanced security
+services.  The signing and public-key encryption functions, for example, could
+be used to create a simple facility for authenticated one-to-one messaging
+within a group.  An application might export different values for encrypting
+real-time media with with SFrame {{?RFC9605}}, or for encrypting information
+that is not expected to be forward-secret within in epoch (e.g., a room title).
+
+Pre-shared keys are an especially flexible facility.  The PreSharedKeyID
+structure used to signal the use of a PSK in a Proposal or Welcome message can
+carry arbitary application data (in the `psk_id` field for `external` PSKs).
+Since both the PreSharedKeyID and the secret PSK value are incorporated into the
+MLS key schedule, PSKs can be used to incorporate application data into the MLS
+key schedule, so that the continued functioning of the MLS group confirms that
+the entire group agrees on the application data.
+
+For example, suppose an application component wanted to confirm the group's
+agreement on an application-level policy document before enforcing the policy.
+The application component wishing to update the policy could cause a Commit to
+be emitted that includes a PreSharedKey proposal whose PreSharedKeyID contains
+the new policy (with a arbitrary application defined PreSharedKey secret,
+possibly empty).  When another member successfully processes this commit, the
+corresponding application component at that member would see that the PSK
+proposal had confirmed agreement the new application policy, and put the policy
+into force.
+
+# Application Component Interface
+
+
+# Security Considerations
+
+# IANA Considerations
+
+
+# ========= OLD CONTENT BELOW THIS LINE ==========
 
 # Introduction
 
