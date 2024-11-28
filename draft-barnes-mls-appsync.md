@@ -175,13 +175,62 @@ uint32 ComponentID;
 
 ## Exported Secrets
 
-## Application Data Proposal
+## Application State Agreement
+
+By virtue of the synchronizations requirements discussed in {{Section 14 of
+RFC9420}} and the group agreement properties of MLS, MLS Commits already provide
+a synchronization point for one aspect of the application, namely the MLS-level
+membership.  In this section, we introduce additional mechanisms that allow an
+application to use MLS Commits to synchronize other aspects of its state.
+
+We provide two basic mechanisms, one ephemeral and one persistent:
+
+* The ApplicationData proposal type allows an application component to associate
+  application data to a Commit, so that the member processing the Commit knows
+  that all other group members will be processing the same data.
+
+* The `application_state` GroupContext extension provides confirmation that all
+  group members have the same representation of the application's state.  The
+  ApplicationStateUpdate proposal allows members to update this state
+  information.
+
+An application can use these two mechanisms to efficiently keep the group in
+sync with regard to application state, even if that state is very large.  For
+example, suppose an application has an application-level participant list, on
+which all members should agree, and a format for patches to the participant list
+reflecting application-level adds and removes.  The application could use the
+mechansism in this section to manage the participant list in the following way:
+
+* Group members can propose changes to the participant list by sending patches
+  in ApplicationData proposals for the "participant list" component.
+
+* When a group member wishes to put a set of changes into effect, they prepare a
+  Commit in the following way:
+    * Select a set of ApplicationData proposals reflecting accepted patches.
+    * Apply the patches to the committer's local participant list.
+    * Compute a hash of the participant list.
+    * Add an ApplicationStateUpdate setting the state for the "participant list"
+      component to the new participant list hash.
+
+* When a group member receives such a Commit, the process it in the following
+  way:
+    * Identify the ApplicationData proposals for the "participant list"
+      component.
+    * Extract the patches from these proposals and apply them to the member's
+      local copy of the participant list.
+    * Compute a hash of the updated participant list.
+    * Verify that hash matches the new value in the `application_state`
+      extension for the "participant list" component.
+
+Note that this approach can manage an arbitrarily large participant list, while
+only sending patches and hashes.  A new joiner can also verify that they have
+received the correct participant list for the group by comparing its local copy
+to the hash in the `application_state` extension.
+
+### ApplicationData
 
 The ApplicationData proposal type allows an application component to send
 application data that will be associated the Commit that applies the propsal.
-Since MLS Commits already provide a synchronization point for one aspect of the
-applicaiton (the MLS-level membership), this mechanism allows the application to
-use MLS proposals to synchronize the group on other aspects of the application.
 
 ```
 struct {
@@ -204,8 +253,6 @@ A client applies an ApplicationData proposal by providing the contents of the
 a Commit references more than one ApplicationData proposal for the same
 `component_id` value, then they MUST be processed in the order in which they are
 specified in the Commit.
-
-## Application State Agreement
 
 ### The `application_state` Extension
 
@@ -230,6 +277,13 @@ numerically ascending order.  There MUST NOT be more than one entry per
 
 The `application_state` extension MUST always be the last extension in the
 `extensions` list in the GroupContext.
+
+Note that this extension is included in every Welcome message, and the only way
+to update a `state` value is to replace it entirely.  If a `state` value is
+large, it will result in large Welcome and ApplicationStateUpdate messages.  In
+cases where a component's state does not have a fixed or bounded size,
+application designers should instead use a hash of the state in this extension,
+and use application-level mechanisms to distribute the state.
 
 ### ApplicationStateUpdate
 
