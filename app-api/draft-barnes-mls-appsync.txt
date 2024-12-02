@@ -2,10 +2,14 @@
 
 
 
-Messaging Layer Security                                       R. Barnes
-Internet-Draft                                                     Cisco
-Intended status: Informational                                   R. Mahy
-Expires: 5 June 2025                      Rohan Mahy Consulting Services
+Messaging Layer Security                                        J. Alwen
+Internet-Draft                                                    Amazon
+Intended status: Informational                                 R. Barnes
+Expires: 5 June 2025                                               Cisco
+                                                                 R. Mahy
+                                          Rohan Mahy Consulting Services
+                                                            M. Mularczyk
+                                                                  Amazon
                                                          2 December 2024
 
 
@@ -405,7 +409,7 @@ Table of Contents
    exporter_secret or the application_export_secret has to use the
    following function:
 
-   DeriveExtensionSecret(Secret, Label) =
+   DeriveApplicationSecret(Secret, Label) =
      ExpandWithLabel(Secret, "ApplicationExport " + ComponentID + " " + Label)
 
    Where ExpandWithLabel is defined in Section 8 of [RFC9420] and where
@@ -651,6 +655,11 @@ Acknowledgments
 
 Authors' Addresses
 
+   Joel Alwen
+   Amazon
+   Email: alwenjo@amazon.com
+
+
    Richard Barnes
    Cisco
    Email: rlb@ipv.sx
@@ -659,3 +668,8 @@ Authors' Addresses
    Rohan Mahy
    Rohan Mahy Consulting Services
    Email: rohan.ietf@gmail.com
+
+
+   Marta Mularczyk
+   Amazon
+   Email: mulmarta@amazon.com

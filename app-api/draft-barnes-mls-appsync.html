@@ -5,8 +5,10 @@
 <meta content="Common,Latin" name="scripts">
 <meta content="initial-scale=1.0" name="viewport">
 <title>An Application Interface to Messaging Layer Security</title>
+<meta content="Joel Alwen" name="author">
 <meta content="Richard Barnes" name="author">
 <meta content="Rohan Mahy" name="author">
+<meta content="Marta Mularczyk" name="author">
 <meta content="
        The Messaging Layer Security protocol enables a group of participants to
 negotiate a common cryptographic state.  While the primary function of MLS is to
@@ -1051,7 +1053,7 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <td class="right">December 2024</td>
 </tr></thead>
 <tfoot><tr>
-<td class="left">Barnes &amp; Mahy</td>
+<td class="left">Alwen, et al.</td>
 <td class="center">Expires 5 June 2025</td>
 <td class="right">[Page]</td>
 </tr></tfoot>
@@ -1074,12 +1076,20 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <dt class="label-authors">Authors:</dt>
 <dd class="authors">
 <div class="author">
+      <div class="author-name">J. Alwen</div>
+<div class="org">Amazon</div>
+</div>
+<div class="author">
       <div class="author-name">R. Barnes</div>
 <div class="org">Cisco</div>
 </div>
 <div class="author">
       <div class="author-name">R. Mahy</div>
 <div class="org">Rohan Mahy Consulting Services</div>
+</div>
+<div class="author">
+      <div class="author-name">M. Mularczyk</div>
+<div class="org">Amazon</div>
 </div>
 </dd>
 </dl>
@@ -1605,7 +1615,7 @@ secrets listed in Table 4 of <span>[<a href="#RFC9420" class="cite xref">RFC9420
 function:<a href="#section-4.5-4" class="pilcrow">¶</a></p>
 <div class="lang-tls sourcecode" id="section-4.5-5">
 <pre>
-DeriveExtensionSecret(Secret, Label) =
+DeriveApplicationSecret(Secret, Label) =
   ExpandWithLabel(Secret, "ApplicationExport " + ComponentID + " " + Label)
 </pre><a href="#section-4.5-5" class="pilcrow">¶</a>
 </div>
@@ -1933,6 +1943,14 @@ other component or the base MLS protocol.<a href="#section-5-1" class="pilcrow">
 <a href="#name-authors-addresses" class="section-name selfRef">Authors' Addresses</a>
       </h2>
 <address class="vcard">
+        <div dir="auto" class="left"><span class="fn nameRole">Joel Alwen</span></div>
+<div dir="auto" class="left"><span class="org">Amazon</span></div>
+<div class="email">
+<span>Email:</span>
+<a href="mailto:alwenjo@amazon.com" class="email">alwenjo@amazon.com</a>
+</div>
+</address>
+<address class="vcard">
         <div dir="auto" class="left"><span class="fn nameRole">Richard Barnes</span></div>
 <div dir="auto" class="left"><span class="org">Cisco</span></div>
 <div class="email">
@@ -1946,6 +1964,14 @@ other component or the base MLS protocol.<a href="#section-5-1" class="pilcrow">
 <div class="email">
 <span>Email:</span>
 <a href="mailto:rohan.ietf@gmail.com" class="email">rohan.ietf@gmail.com</a>
+</div>
+</address>
+<address class="vcard">
+        <div dir="auto" class="left"><span class="fn nameRole">Marta Mularczyk</span></div>
+<div dir="auto" class="left"><span class="org">Amazon</span></div>
+<div class="email">
+<span>Email:</span>
+<a href="mailto:mulmarta@amazon.com" class="email">mulmarta@amazon.com</a>
 </div>
 </address>
 </section>
