@@ -23,14 +23,18 @@ venue:
   latest: "https://bifurcation.github.io/mls-appsync/draft-barnes-mls-appsync.html"
 
 author:
- -
-    fullname: Richard Barnes
-    organization: Cisco
-    email: rlb@ipv.sx
- -
-    fullname: Rohan Mahy
-    organization: Rohan Mahy Consulting Services
-    email: rohan.ietf@gmail.com
+ - name: Joel Alwen
+   org:  Amazon
+   email:  alwenjo@amazon.com
+ - name: Richard Barnes
+   org: Cisco
+   email: rlb@ipv.sx
+ - name: Rohan Mahy
+   org:  Rohan Mahy Consulting Services
+   email:  rohan.ietf@gmail.com
+ - name: Marta Mularczyk
+   org:  Amazon
+   email:  mulmarta@amazon.com
 
 normative:
 
@@ -349,7 +353,7 @@ Any derivation performed by an application component either from the
 function:
 
 ~~~ tls
-DeriveExtensionSecret(Secret, Label) =
+DeriveApplicationSecret(Secret, Label) =
   ExpandWithLabel(Secret, "ApplicationExport " + ComponentID + " " + Label)
 ~~~
 
