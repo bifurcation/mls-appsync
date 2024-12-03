@@ -496,24 +496,36 @@ a proposal list is valid only if it contains (a) a single `remove` operation or
 ApplicationDataUpdate proposals are processed after any default proposals (i.e., those
 defined in {{RFC9420}}), and any ApplicationData proposals.
 
-A client applies an ApplicationDataUpdate proposal by changing the contents of
-the `application_state` extension associated to its local copy of the
-GroupContext for the group.
+A client applies ApplicationDataUpdate proposals by component ID.  For each
+`component_id` field that appears in an ApplicationDataUpdate proposal in the
+Commit, the client assembles a list of ApplicationDataUpdate proposals with that
+`component_id`, in the order in which they appear in the Commit, and processes
+them in the following way:
 
-* If the `op` field is set to `update`:
+* If the list comprises a single proposal with the `op` field set to `remove`:
 
-    * If no `application_data` extension is present in the GroupContext, add one
-      to the end of the `extensions` list in the GroupContext.
+    * If there is an entry in the `component_states` vector in the
+      `application_state` extension with the specified `component_id`, remove
+      it.
 
-    * Provide the content of the `update` field to the application logic
-      registered to the `component_id` value.
+    * Otherwise, the proposal is invalid.
+
+* If the list comprises one or more proposals, all with `op` field set to
+  `update`:
+
+    * Provide the application logic registered to the `component_id` value with
+      the content of the `update` field from each proposal, in the order
+      specified.
 
     * The application logic returns either an opaque value `new_data` that will be
       stored as the new application data for this component, or else an
       indication that it considers this update invalid.
 
     * If the application logic considers the update invalid, the MLS client MUST
-      consider the proposal invalid.
+      consider the proposal list invalid.
+
+    * If no `application_data` extension is present in the GroupContext, add one
+      to the end of the `extensions` list in the GroupContext.
 
     * If there is an entry in the `component_data` vector in the
       `application_data` extension with the specified `component_id`, then set
@@ -524,13 +536,7 @@ GroupContext for the group.
       value.  The new entry is inserted at the proper point to keep the
       `component_states` vector sorted by `component_id`.
 
-* If the `op` field is set to `remove`:
-
-    * If there is an entry in the `component_states` vector in the
-      `application_state` extension with the specified `component_id`, remove
-      it.
-
-    * Otherwise, the proposal is invalid.
+* Otherwise, the proposal list is invalid.
 
 > TODO: An alternative design here would be to have the `update` operation
 > simply set the new value for the `application_data` GCE, instead of sending a
