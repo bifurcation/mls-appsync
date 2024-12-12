@@ -5,15 +5,15 @@
 Messaging Layer Security                                        J. Alwen
 Internet-Draft                                                    Amazon
 Intended status: Informational                                 R. Barnes
-Expires: 6 June 2025                                               Cisco
+Expires: 15 June 2025                                              Cisco
                                                                  R. Mahy
                                           Rohan Mahy Consulting Services
                                                             M. Mularczyk
                                                                   Amazon
-                                                         3 December 2024
+                                                        12 December 2024
 
 
-          An Application Interface to Messaging Layer Security
+        A Safe Application Interface to Messaging Layer Security
                     draft-barnes-mls-appsync-latest
 
 Abstract
@@ -59,7 +59,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 6 June 2025.
+   This Internet-Draft will expire on 15 June 2025.
 
 Copyright Notice
 
@@ -80,21 +80,19 @@ Table of Contents
    1.  Introduction
    2.  Conventions and Definitions
    3.  Protocol Overview
-   4.  Application Component Interface
-     4.1.  Component IDs
-     4.2.  Hybrid Public Key Encryption (HPKE) Keys
-     4.3.  Signature Keys
-     4.4.  Pre-Shared Keys
-     4.5.  Exported Secrets
-     4.6.  Carrying Application Data in MLS
-       4.6.1.  application_data Extension
-       4.6.2.  ApplicationData
-       4.6.3.  ApplicationDataUpdate
-   5.  Security Considerations
-   6.  IANA Considerations
-   7.  References
-     7.1.  Normative References
-     7.2.  Informative References
+     3.1.  Component IDs
+   4.  Hybrid Public Key Encryption (HPKE) Keys
+   5.  Signature Keys
+   6.  Pre-Shared Keys
+   7.  Exported Secrets
+   8.  Attaching Application Data to MLS Messages
+   9.  Updating Application Data in the GroupContext
+   10. Attaching Application Data to a Commit
+   11. Security Considerations
+   12. IANA Considerations
+   13. References
+     13.1.  Normative References
+     13.2.  Informative References
    Acknowledgments
    Authors' Addresses
 
@@ -121,7 +119,7 @@ Table of Contents
    authentication properties.
 
    As application designers become more familiar with MLS, there is
-   increasing interest in leveraging otehr cryptographic tools that an
+   increasing interest in leveraging other cryptographic tools that an
    MLS group provides:
 
    *  HPKE and signature key pairs for each member, where the private
@@ -134,12 +132,16 @@ Table of Contents
    *  An exporter mechanism that allows applications to derive secrets
       from the MLS key schedule.
 
+   *  Association of data with Commits as a synchronization mechanism.
+
+   *  Binding of information to the GroupContext to confirm group
+      agreement.
+
    There is also interest in exposing an MLS group to multiple loosely-
-   coordinated components of an application.  To support these use
-   cases, there is a need for a mechanism that provides application
-   components access to MLS's cryptographic tools in a way that ensure
-   that different components' usage will not conflict with each other,
-   or with MLS itself.
+   coordinated components of an application.  To accommodate such cases,
+   the above mechanisms need to be exposed in such a way that different
+   components' usage will not conflict with each other, or with MLS
+   itself.
 
    This document defines a set of mechanisms that application components
    can use to ensure that their use of these facilities is properly
@@ -169,10 +171,6 @@ Table of Contents
 
 3.  Protocol Overview
 
-      TODO: Examples of how an application would use these things
-
-4.  Application Component Interface
-
    The mechansms in this document take MLS mechanisms that are either
    not inherently designed to be used by applications, or not inherently
    designed to be used by multiple application components, and adds a
@@ -194,8 +192,9 @@ Table of Contents
       they are being exported, so that different components will get
       different exported values.
 
-   We also define two new general mechanisms that allow applications to
-   take advantage of the extensibility mechanisms of MLS:
+   We also define new general mechanisms that allow applications to take
+   advantage of the extensibility mechanisms of MLS without having to
+   define extensions themselves:
 
    *  An application_data extension type that associates application
       data with MLS messages, or with the state of the group.
@@ -215,7 +214,7 @@ Table of Contents
    are then incorporated into the appopriate calculations in the
    protocol to achieve the required separation.
 
-4.1.  Component IDs
+3.1.  Component IDs
 
    A component ID is a four-byte value that uniquely identifies a
    component within the scope of an application.
@@ -246,7 +245,7 @@ Table of Contents
      opaque context<V>;
    } ComponentOperationLabel;
 
-4.2.  Hybrid Public Key Encryption (HPKE) Keys
+4.  Hybrid Public Key Encryption (HPKE) Keys
 
    This component of the API allows components to make use of the HPKE
    key pairs generated by MLS.  An component identified by an CompnentID
@@ -306,7 +305,7 @@ Table of Contents
       The secret key is known only to the owner of the KeyPackage and is
       deleted immediately after it is used to join a group.
 
-4.3.  Signature Keys
+5.  Signature Keys
 
    MLS session states contain a number of signature keys including the
    ones in the LeafNode structs.  Application components can safely sign
@@ -338,7 +337,7 @@ Table of Contents
    separation is ensured by explicitly including the ComponentID with
    every operation.
 
-4.4.  Pre-Shared Keys
+6.  Pre-Shared Keys
 
    PSKs represent key material that is injected into the MLS key
    schedule when creating or processing a commit as defined in
@@ -384,7 +383,7 @@ Table of Contents
       external PSKType as (component_id, psk_id).  I guess this approach
       separates this API from other external PSKs.
 
-4.5.  Exported Secrets
+7.  Exported Secrets
 
    An application component can use MLS as a group key agreement
    protocol by exporting symmetric keys.  Such keys can be exported
@@ -420,16 +419,7 @@ Table of Contents
       sufficient to just use the exporter_secret?  Or the MLS-Exporter
       mechanism with a label structured to include the ComponentID?
 
-4.6.  Carrying Application Data in MLS
-
-   MLS provides a few extension points, including extensions fields on
-   several objects and extensible set of proposal types.  This section
-   defines simple, standard ways for applications to use these extension
-   points.  The intent is to allow MLS stacks to offer one set of APIs
-   that can serve many application needs, so that applications don't
-   need to define and negotiate extensions at the MLS level.
-
-4.6.1.  application_data Extension
+8.  Attaching Application Data to MLS Messages
 
    The MLS GroupContext, LeafNode, KeyPackage, and GroupInfo objects
    each have an extensions field that can carry additional data not
@@ -470,44 +460,10 @@ Table of Contents
    update GroupContext extensions: The creator of the group can set
    extensions unilaterally, and thereafter, the GroupContextExtensions
    proposal can be used to update extensions.  The ApplicationDataUpdate
-   proposal described in Section 4.6.3 provides a more efficient way to
+   proposal described in Section 9 provides a more efficient way to
    update the application_data extension.
 
-4.6.2.  ApplicationData
-
-   The ApplicationData proposal type allows an application component to
-   associate application data to a Commit, so that the member processing
-   the Commit knows that all other group members will be processing the
-   same data.  ApplicationData proposals are ephemeral in the sense that
-   they do not change any persistent state related to MLS, aside from
-   their appearance in the transcript hash.
-
-   The content of an ApplicationData proposal is the same as an
-   application_data extension.  The proposal type is set in Section 6.
-
-   struct {
-       ComponentID component_id;
-       opaque data<V>;
-   } ApplicationData;
-
-   An ApplicationData proposal is invalid if it contains a component_id
-   that is unknown to the application, or if the application_data field
-   contains any ComponentData entry whose data field is considered
-   invalid by the application logic registered to the indicated
-   component_id.
-
-   ApplicationData proposals MUST be processed after any default
-   proposals (i.e., those defined in [RFC9420]), but before any
-   ApplicationDataUpdate proposals.
-
-   A client applies an ApplicationData proposal by providing the
-   contents of the application_data field to the component identified by
-   the component_id.  If a Commit references more than one
-   ApplicationData proposal for the same component_id value, then they
-   MUST be processed in the order in which they are specified in the
-   Commit.
-
-4.6.3.  ApplicationDataUpdate
+9.  Updating Application Data in the GroupContext
 
    Updating the application_data with a GroupContextExtensions proposal
    is cumbersome.  The application data needs to be transmitted in its
@@ -594,18 +550,53 @@ Table of Contents
 
    *  Otherwise, the proposal list is invalid.
 
-      TODO: An alternative design here would be to have the update
+      NOTE: An alternative design here would be to have the update
       operation simply set the new value for the application_data GCE,
       instead of sending a diff.  This would be simpler in that the MLS
       stack wouldn't have to ask the application for the new state
       value, and would discourage applications from storing large state
       in the GroupContext directly (which bloats Welcome messages).  It
       would effectively require the state in the GroupContext to be a
-      hash of the real state.  This pushes some complexity onto the
-      application, since the application has to define a hashing
-      algorithm, and could make debugging more complex.
+      hash of the real state, to avoid large ApplicationDataUpdate
+      proposals.  This pushes some complexity onto the application,
+      since the application has to define a hashing algorithm, and
+      define its own scheme for initializing new joiners.
 
-5.  Security Considerations
+10.  Attaching Application Data to a Commit
+
+   The ApplicationData proposal type allows an application component to
+   associate application data to a Commit, so that the member processing
+   the Commit knows that all other group members will be processing the
+   same data.  ApplicationData proposals are ephemeral in the sense that
+   they do not change any persistent state related to MLS, aside from
+   their appearance in the transcript hash.
+
+   The content of an ApplicationData proposal is the same as an
+   application_data extension.  The proposal type is set in Section 12.
+
+   struct {
+       ComponentID component_id;
+       opaque data<V>;
+   } ApplicationData;
+
+   An ApplicationData proposal is invalid if it contains a component_id
+   that is unknown to the application, or if the application_data field
+   contains any ComponentData entry whose data field is considered
+   invalid by the application logic registered to the indicated
+   component_id.
+
+   ApplicationData proposals MUST be processed after any default
+   proposals (i.e., those defined in [RFC9420]), but before any
+   ApplicationDataUpdate proposals.
+
+   A client applies an ApplicationData proposal by providing the
+   contents of the application_data field to the component identified by
+   the component_id.  If a Commit references more than one
+   ApplicationData proposal for the same component_id value, then they
+   MUST be processed in the order in which they are specified in the
+   Commit.
+
+11.  Security Considerations
 
    The API defined in this document provides the following security
    guarantee: If an application uses MLS and all its components use this
@@ -620,7 +611,7 @@ Table of Contents
    This also means that any security vulnerabilities introduced by one
    component do not spread to other component or the base MLS protocol.
 
-6.  IANA Considerations
+12.  IANA Considerations
 
    TODO:
 
@@ -630,9 +621,9 @@ Table of Contents
 
    *  Register ApplicationDataUpdate proposal
 
-7.  References
+13.  References
 
-7.1.  Normative References
+13.1.  Normative References
 
    [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
               Requirement Levels", BCP 14, RFC 2119,
@@ -652,7 +643,7 @@ Table of Contents
               Security (MLS) Protocol", RFC 9420, DOI 10.17487/RFC9420,
               July 2023, <https://www.rfc-editor.org/rfc/rfc9420>.
 
-7.2.  Informative References
+13.2.  Informative References
 
    [I-D.mls-architecture]
               "*** BROKEN REFERENCE ***".

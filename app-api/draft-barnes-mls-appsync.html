@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta content="Common,Latin" name="scripts">
 <meta content="initial-scale=1.0" name="viewport">
-<title>An Application Interface to Messaging Layer Security</title>
+<title>A Safe Application Interface to Messaging Layer Security</title>
 <meta content="Joel Alwen" name="author">
 <meta content="Richard Barnes" name="author">
 <meta content="Rohan Mahy" name="author">
@@ -18,12 +18,12 @@ group has confirmed agreement.  This document defines an interface interface by
 which multiple uncoordinated application functions may safely reuse the
 cryptographic state of an MLS group for application purposes. 
     " name="description">
-<meta content="xml2rfc 3.24.0" name="generator">
+<meta content="xml2rfc 3.25.0" name="generator">
 <meta content="messaging layer security" name="keyword">
 <meta content="end-to-end encryption" name="keyword">
 <meta content="draft-barnes-mls-appsync-latest" name="ietf.draft">
 <!-- Generator version information:
-  xml2rfc 3.24.0
+  xml2rfc 3.25.0
     Python 3.12.7
     ConfigArgParse 1.7
     google-i18n-address 3.1.1
@@ -544,7 +544,11 @@ figcaption, caption {
   }
   pre, svg {
     display: inline-block;
-    overflow-x: auto;
+    /* In the horizontal direction, sometimes people make over-sized figures.
+       Scrollbars for those is therefore necessary: auto adds them as necessary..
+       In the vertical direction, the line-height can combine with the font
+       asender/descender height to produce scrollbars: hidden avoids that. */
+    overflow: auto hidden;
   }
   pre {
     max-width: 100%;
@@ -1054,7 +1058,7 @@ svg :is([fill="white"], [fill^="#fff"]) {
 </tr></thead>
 <tfoot><tr>
 <td class="left">Alwen, et al.</td>
-<td class="center">Expires 6 June 2025</td>
+<td class="center">Expires 15 June 2025</td>
 <td class="right">[Page]</td>
 </tr></tfoot>
 </table>
@@ -1067,12 +1071,12 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <dd class="internet-draft">draft-barnes-mls-appsync-latest</dd>
 <dt class="label-published">Published:</dt>
 <dd class="published">
-<time datetime="2024-12-03" class="published">3 December 2024</time>
+<time datetime="2024-12-12" class="published">12 December 2024</time>
     </dd>
 <dt class="label-intended-status">Intended Status:</dt>
 <dd class="intended-status">Informational</dd>
 <dt class="label-expires">Expires:</dt>
-<dd class="expires"><time datetime="2025-06-06">6 June 2025</time></dd>
+<dd class="expires"><time datetime="2025-06-15">15 June 2025</time></dd>
 <dt class="label-authors">Authors:</dt>
 <dd class="authors">
 <div class="author">
@@ -1094,7 +1098,7 @@ svg :is([fill="white"], [fill^="#fff"]) {
 </dd>
 </dl>
 </div>
-<h1 id="title">An Application Interface to Messaging Layer Security</h1>
+<h1 id="title">A Safe Application Interface to Messaging Layer Security</h1>
 <section id="section-abstract">
       <h2 id="abstract"><a href="#abstract" class="selfRef">Abstract</a></h2>
 <p id="section-abstract-1">The Messaging Layer Security protocol enables a group of participants to
@@ -1140,7 +1144,7 @@ cryptographic state of an MLS group for application purposes.<a href="#section-a
         time. It is inappropriate to use Internet-Drafts as reference
         material or to cite them other than as "work in progress."<a href="#section-boilerplate.1-3" class="pilcrow">¶</a></p>
 <p id="section-boilerplate.1-4">
-        This Internet-Draft will expire on 6 June 2025.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
+        This Internet-Draft will expire on 15 June 2025.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="copyright">
@@ -1176,64 +1180,56 @@ cryptographic state of an MLS group for application purposes.<a href="#section-a
             <p id="section-toc.1-1.2.1" class="keepWithNext"><a href="#section-2" class="auto internal xref">2</a>.  <a href="#name-conventions-and-definitions" class="internal xref">Conventions and Definitions</a></p>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3">
-            <p id="section-toc.1-1.3.1" class="keepWithNext"><a href="#section-3" class="auto internal xref">3</a>.  <a href="#name-protocol-overview" class="internal xref">Protocol Overview</a></p>
+            <p id="section-toc.1-1.3.1"><a href="#section-3" class="auto internal xref">3</a>.  <a href="#name-protocol-overview" class="internal xref">Protocol Overview</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3.2.1">
+                <p id="section-toc.1-1.3.2.1.1" class="keepWithNext"><a href="#section-3.1" class="auto internal xref">3.1</a>.  <a href="#name-component-ids" class="internal xref">Component IDs</a></p>
+</li>
+            </ul>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.4">
-            <p id="section-toc.1-1.4.1"><a href="#section-4" class="auto internal xref">4</a>.  <a href="#name-application-component-inter" class="internal xref">Application Component Interface</a></p>
-<ul class="compact toc ulBare ulEmpty">
-<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.4.2.1">
-                <p id="section-toc.1-1.4.2.1.1"><a href="#section-4.1" class="auto internal xref">4.1</a>.  <a href="#name-component-ids" class="internal xref">Component IDs</a></p>
-</li>
-              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.4.2.2">
-                <p id="section-toc.1-1.4.2.2.1"><a href="#section-4.2" class="auto internal xref">4.2</a>.  <a href="#name-hybrid-public-key-encryptio" class="internal xref">Hybrid Public Key Encryption (HPKE) Keys</a></p>
-</li>
-              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.4.2.3">
-                <p id="section-toc.1-1.4.2.3.1"><a href="#section-4.3" class="auto internal xref">4.3</a>.  <a href="#name-signature-keys" class="internal xref">Signature Keys</a></p>
-</li>
-              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.4.2.4">
-                <p id="section-toc.1-1.4.2.4.1"><a href="#section-4.4" class="auto internal xref">4.4</a>.  <a href="#name-pre-shared-keys" class="internal xref">Pre-Shared Keys</a></p>
-</li>
-              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.4.2.5">
-                <p id="section-toc.1-1.4.2.5.1"><a href="#section-4.5" class="auto internal xref">4.5</a>.  <a href="#name-exported-secrets" class="internal xref">Exported Secrets</a></p>
-</li>
-              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.4.2.6">
-                <p id="section-toc.1-1.4.2.6.1"><a href="#section-4.6" class="auto internal xref">4.6</a>.  <a href="#name-carrying-application-data-i" class="internal xref">Carrying Application Data in MLS</a></p>
-<ul class="compact toc ulBare ulEmpty">
-<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.4.2.6.2.1">
-                    <p id="section-toc.1-1.4.2.6.2.1.1"><a href="#section-4.6.1" class="auto internal xref">4.6.1</a>.  <a href="#name-application_data-extension" class="internal xref"><code>application_data</code> Extension</a></p>
-</li>
-                  <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.4.2.6.2.2">
-                    <p id="section-toc.1-1.4.2.6.2.2.1"><a href="#section-4.6.2" class="auto internal xref">4.6.2</a>.  <a href="#name-applicationdata" class="internal xref">ApplicationData</a></p>
-</li>
-                  <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.4.2.6.2.3">
-                    <p id="section-toc.1-1.4.2.6.2.3.1"><a href="#section-4.6.3" class="auto internal xref">4.6.3</a>.  <a href="#name-applicationdataupdate" class="internal xref">ApplicationDataUpdate</a></p>
-</li>
-                </ul>
-</li>
-            </ul>
+            <p id="section-toc.1-1.4.1"><a href="#section-4" class="auto internal xref">4</a>.  <a href="#name-hybrid-public-key-encryptio" class="internal xref">Hybrid Public Key Encryption (HPKE) Keys</a></p>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.5">
-            <p id="section-toc.1-1.5.1"><a href="#section-5" class="auto internal xref">5</a>.  <a href="#name-security-considerations" class="internal xref">Security Considerations</a></p>
+            <p id="section-toc.1-1.5.1"><a href="#section-5" class="auto internal xref">5</a>.  <a href="#name-signature-keys" class="internal xref">Signature Keys</a></p>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.6">
-            <p id="section-toc.1-1.6.1"><a href="#section-6" class="auto internal xref">6</a>.  <a href="#name-iana-considerations" class="internal xref">IANA Considerations</a></p>
+            <p id="section-toc.1-1.6.1"><a href="#section-6" class="auto internal xref">6</a>.  <a href="#name-pre-shared-keys" class="internal xref">Pre-Shared Keys</a></p>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.7">
-            <p id="section-toc.1-1.7.1"><a href="#section-7" class="auto internal xref">7</a>.  <a href="#name-references" class="internal xref">References</a></p>
-<ul class="compact toc ulBare ulEmpty">
-<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.7.2.1">
-                <p id="section-toc.1-1.7.2.1.1"><a href="#section-7.1" class="auto internal xref">7.1</a>.  <a href="#name-normative-references" class="internal xref">Normative References</a></p>
+            <p id="section-toc.1-1.7.1"><a href="#section-7" class="auto internal xref">7</a>.  <a href="#name-exported-secrets" class="internal xref">Exported Secrets</a></p>
 </li>
-              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.7.2.2">
-                <p id="section-toc.1-1.7.2.2.1"><a href="#section-7.2" class="auto internal xref">7.2</a>.  <a href="#name-informative-references" class="internal xref">Informative References</a></p>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.8">
+            <p id="section-toc.1-1.8.1"><a href="#section-8" class="auto internal xref">8</a>.  <a href="#name-attaching-application-data-" class="internal xref">Attaching Application Data to MLS Messages</a></p>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.9">
+            <p id="section-toc.1-1.9.1"><a href="#section-9" class="auto internal xref">9</a>.  <a href="#name-updating-application-data-i" class="internal xref">Updating Application Data in the GroupContext</a></p>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.10">
+            <p id="section-toc.1-1.10.1"><a href="#section-10" class="auto internal xref">10</a>. <a href="#name-attaching-application-data-t" class="internal xref">Attaching Application Data to a Commit</a></p>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.11">
+            <p id="section-toc.1-1.11.1"><a href="#section-11" class="auto internal xref">11</a>. <a href="#name-security-considerations" class="internal xref">Security Considerations</a></p>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.12">
+            <p id="section-toc.1-1.12.1"><a href="#section-12" class="auto internal xref">12</a>. <a href="#name-iana-considerations" class="internal xref">IANA Considerations</a></p>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.13">
+            <p id="section-toc.1-1.13.1"><a href="#section-13" class="auto internal xref">13</a>. <a href="#name-references" class="internal xref">References</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.13.2.1">
+                <p id="section-toc.1-1.13.2.1.1"><a href="#section-13.1" class="auto internal xref">13.1</a>.  <a href="#name-normative-references" class="internal xref">Normative References</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.13.2.2">
+                <p id="section-toc.1-1.13.2.2.1"><a href="#section-13.2" class="auto internal xref">13.2</a>.  <a href="#name-informative-references" class="internal xref">Informative References</a></p>
 </li>
             </ul>
 </li>
-          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.8">
-            <p id="section-toc.1-1.8.1"><a href="#appendix-A" class="auto internal xref"></a><a href="#name-acknowledgments" class="internal xref">Acknowledgments</a></p>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.14">
+            <p id="section-toc.1-1.14.1"><a href="#appendix-A" class="auto internal xref"></a><a href="#name-acknowledgments" class="internal xref">Acknowledgments</a></p>
 </li>
-          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.9">
-            <p id="section-toc.1-1.9.1"><a href="#appendix-B" class="auto internal xref"></a><a href="#name-authors-addresses" class="internal xref">Authors' Addresses</a></p>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.15">
+            <p id="section-toc.1-1.15.1"><a href="#appendix-B" class="auto internal xref"></a><a href="#name-authors-addresses" class="internal xref">Authors' Addresses</a></p>
 </li>
         </ul>
 </nav>
@@ -1265,7 +1261,7 @@ secure message encapsulation (PrivateMessage), the MLS exporter, and the epoch
 authenticator.  Current MLS applications make use of these mechanisms to acheive
 a variety of confidentiality and authentication properties.<a href="#section-1-4" class="pilcrow">¶</a></p>
 <p id="section-1-5">As application designers become more familiar with MLS, there is increasing
-interest in leveraging otehr cryptographic tools that an MLS group provides:<a href="#section-1-5" class="pilcrow">¶</a></p>
+interest in leveraging other cryptographic tools that an MLS group provides:<a href="#section-1-5" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="section-1-6.1">
           <p id="section-1-6.1.1">HPKE and signature key pairs for each member, where the private key is known
@@ -1279,12 +1275,17 @@ the MLS key schedule.<a href="#section-1-6.2.1" class="pilcrow">¶</a></p>
           <p id="section-1-6.3.1">An exporter mechanism that allows applications to derive secrets from the MLS
 key schedule.<a href="#section-1-6.3.1" class="pilcrow">¶</a></p>
 </li>
+        <li class="normal" id="section-1-6.4">
+          <p id="section-1-6.4.1">Association of data with Commits as a synchronization mechanism.<a href="#section-1-6.4.1" class="pilcrow">¶</a></p>
+</li>
+        <li class="normal" id="section-1-6.5">
+          <p id="section-1-6.5.1">Binding of information to the GroupContext to confirm group agreement.<a href="#section-1-6.5.1" class="pilcrow">¶</a></p>
+</li>
       </ul>
 <p id="section-1-7">There is also interest in exposing an MLS group to multiple loosely-coordinated
-components of an application.  To support these use cases, there is a need for a
-mechanism that provides application components access to MLS's cryptographic
-tools in a way that ensure that different components' usage will not conflict
-with each other, or with MLS itself.<a href="#section-1-7" class="pilcrow">¶</a></p>
+components of an application.  To accommodate such cases, the above mechanisms
+need to be exposed in such a way that different components' usage will not
+conflict with each other, or with MLS itself.<a href="#section-1-7" class="pilcrow">¶</a></p>
 <p id="section-1-8">This document defines a set of mechanisms that application components can use to
 ensure that their use of these facilities is properly domain-separated from MLS
 itself, and from other application components that might be using the same MLS
@@ -1328,113 +1329,104 @@ the application.<a href="#section-2-3.6.1" class="pilcrow">¶</a></p>
       <h2 id="name-protocol-overview">
 <a href="#section-3" class="section-number selfRef">3. </a><a href="#name-protocol-overview" class="section-name selfRef">Protocol Overview</a>
       </h2>
-<ul class="normal ulEmpty">
-<li class="normal ulEmpty" id="section-3-1.1">
-          <p id="section-3-1.1.1">TODO: Examples of how an application would use these things<a href="#section-3-1.1.1" class="pilcrow">¶</a></p>
-</li>
-      </ul>
-</section>
-</div>
-<div id="application-component-interface">
-<section id="section-4">
-      <h2 id="name-application-component-inter">
-<a href="#section-4" class="section-number selfRef">4. </a><a href="#name-application-component-inter" class="section-name selfRef">Application Component Interface</a>
-      </h2>
-<p id="section-4-1">The mechansms in this document take MLS mechanisms that are either not
+<p id="section-3-1">The mechansms in this document take MLS mechanisms that are either not
 inherently designed to be used by applications, or not inherently designed to be
 used by multiple application components, and adds a domain separator that
 separates application usage from MLS usage, and application components' usage
-from each other:<a href="#section-4-1" class="pilcrow">¶</a></p>
+from each other:<a href="#section-3-1" class="pilcrow">¶</a></p>
 <ul class="normal">
-<li class="normal" id="section-4-2.1">
-          <p id="section-4-2.1.1">Signing operations are tagged so that signatures will only verify in the
-context of a given component.<a href="#section-4-2.1.1" class="pilcrow">¶</a></p>
+<li class="normal" id="section-3-2.1">
+          <p id="section-3-2.1.1">Signing operations are tagged so that signatures will only verify in the
+context of a given component.<a href="#section-3-2.1.1" class="pilcrow">¶</a></p>
 </li>
-        <li class="normal" id="section-4-2.2">
-          <p id="section-4-2.2.1">Public-key encryption operations are similarly tagged so that encrypted data
-will only decrypt in the context of a given component.<a href="#section-4-2.2.1" class="pilcrow">¶</a></p>
+        <li class="normal" id="section-3-2.2">
+          <p id="section-3-2.2.1">Public-key encryption operations are similarly tagged so that encrypted data
+will only decrypt in the context of a given component.<a href="#section-3-2.2.1" class="pilcrow">¶</a></p>
 </li>
-        <li class="normal" id="section-4-2.3">
-          <p id="section-4-2.3.1">Pre-shared keys are identified as originating from a specific component, so
+        <li class="normal" id="section-3-2.3">
+          <p id="section-3-2.3.1">Pre-shared keys are identified as originating from a specific component, so
 that differnet components' contributions to the MLS key schedule will not
-collide.<a href="#section-4-2.3.1" class="pilcrow">¶</a></p>
+collide.<a href="#section-3-2.3.1" class="pilcrow">¶</a></p>
 </li>
-        <li class="normal" id="section-4-2.4">
-          <p id="section-4-2.4.1">Exported values include an identifier for the component to which they are
+        <li class="normal" id="section-3-2.4">
+          <p id="section-3-2.4.1">Exported values include an identifier for the component to which they are
 being exported, so that different components will get different exported
-values.<a href="#section-4-2.4.1" class="pilcrow">¶</a></p>
+values.<a href="#section-3-2.4.1" class="pilcrow">¶</a></p>
 </li>
       </ul>
-<p id="section-4-3">We also define two new general mechanisms that allow applications to take
-advantage of the extensibility mechanisms of MLS:<a href="#section-4-3" class="pilcrow">¶</a></p>
+<p id="section-3-3">We also define new general mechanisms that allow applications to take advantage
+of the extensibility mechanisms of MLS without having to define extensions
+themselves:<a href="#section-3-3" class="pilcrow">¶</a></p>
 <ul class="normal">
-<li class="normal" id="section-4-4.1">
-          <p id="section-4-4.1.1">An <code>application_data</code> extension type that associates application data with MLS
-messages, or with the state of the group.<a href="#section-4-4.1.1" class="pilcrow">¶</a></p>
+<li class="normal" id="section-3-4.1">
+          <p id="section-3-4.1.1">An <code>application_data</code> extension type that associates application data with MLS
+messages, or with the state of the group.<a href="#section-3-4.1.1" class="pilcrow">¶</a></p>
 </li>
-        <li class="normal" id="section-4-4.2">
-          <p id="section-4-4.2.1">An ApplicationData proposal type that enables arbitrary application data to
-be associated to a Commit.<a href="#section-4-4.2.1" class="pilcrow">¶</a></p>
+        <li class="normal" id="section-3-4.2">
+          <p id="section-3-4.2.1">An ApplicationData proposal type that enables arbitrary application data to
+be associated to a Commit.<a href="#section-3-4.2.1" class="pilcrow">¶</a></p>
 </li>
-        <li class="normal" id="section-4-4.3">
-          <p id="section-4-4.3.1">An ApplicationDataUpdate proposal type that enables efficient updates to
-an <code>application_data</code> GroupContext extension.<a href="#section-4-4.3.1" class="pilcrow">¶</a></p>
+        <li class="normal" id="section-3-4.3">
+          <p id="section-3-4.3.1">An ApplicationDataUpdate proposal type that enables efficient updates to
+an <code>application_data</code> GroupContext extension.<a href="#section-3-4.3.1" class="pilcrow">¶</a></p>
 </li>
       </ul>
-<p id="section-4-5">As with the above, information carried in these proposals and extension marked
+<p id="section-3-5">As with the above, information carried in these proposals and extension marked
 as belonging to a specific application component, so that components can manage
-their information independently.<a href="#section-4-5" class="pilcrow">¶</a></p>
-<p id="section-4-6">The separation between components is acheived by the application assigning each
+their information independently.<a href="#section-3-5" class="pilcrow">¶</a></p>
+<p id="section-3-6">The separation between components is acheived by the application assigning each
 component a unique component ID number.  These numbers are then incorporated
 into the appopriate calculations in the protocol to achieve the required
-separation.<a href="#section-4-6" class="pilcrow">¶</a></p>
+separation.<a href="#section-3-6" class="pilcrow">¶</a></p>
 <div id="component-ids">
-<section id="section-4.1">
+<section id="section-3.1">
         <h3 id="name-component-ids">
-<a href="#section-4.1" class="section-number selfRef">4.1. </a><a href="#name-component-ids" class="section-name selfRef">Component IDs</a>
+<a href="#section-3.1" class="section-number selfRef">3.1. </a><a href="#name-component-ids" class="section-name selfRef">Component IDs</a>
         </h3>
-<p id="section-4.1-1">A component ID is a four-byte value that uniquely identifies a component within
-the scope of an application.<a href="#section-4.1-1" class="pilcrow">¶</a></p>
-<p id="section-4.1-2"><code>
+<p id="section-3.1-1">A component ID is a four-byte value that uniquely identifies a component within
+the scope of an application.<a href="#section-3.1-1" class="pilcrow">¶</a></p>
+<p id="section-3.1-2"><code>
 uint32 ComponentID;
-</code><a href="#section-4.1-2" class="pilcrow">¶</a></p>
+</code><a href="#section-3.1-2" class="pilcrow">¶</a></p>
 <ul class="normal ulEmpty">
-<li class="normal ulEmpty" id="section-4.1-3.1">
-            <p id="section-4.1-3.1.1">TODO: What are the uniqueness requirements on these?  It seems like the more
+<li class="normal ulEmpty" id="section-3.1-3.1">
+            <p id="section-3.1-3.1.1">TODO: What are the uniqueness requirements on these?  It seems like the more
 diversity, the better.  For example, if a ComponentID is reused across
 applications (e.g., via an IANA registry), then there will be a risk of replay
 across applications.  Maybe we should include a binder to the group/epoch as
-well, something derived from the key schedule.<a href="#section-4.1-3.1.1" class="pilcrow">¶</a></p>
+well, something derived from the key schedule.<a href="#section-3.1-3.1.1" class="pilcrow">¶</a></p>
 </li>
         </ul>
 <ul class="normal ulEmpty">
-<li class="normal ulEmpty" id="section-4.1-4.1">
-            <p id="section-4.1-4.1.1">TODO: It might be better to frame these in terms of "data types" instead of
+<li class="normal ulEmpty" id="section-3.1-4.1">
+            <p id="section-3.1-4.1.1">TODO: It might be better to frame these in terms of "data types" instead of
 components, to avoid presuming software architecture.  Though that makes less
-sense for the more "active" portions of the API, e.g., signing and encryption.<a href="#section-4.1-4.1.1" class="pilcrow">¶</a></p>
+sense for the more "active" portions of the API, e.g., signing and encryption.<a href="#section-3.1-4.1.1" class="pilcrow">¶</a></p>
 </li>
         </ul>
-<p id="section-4.1-5">When a label is required for an operation, the following data structure is used.
+<p id="section-3.1-5">When a label is required for an operation, the following data structure is used.
 The <code>label</code> field identifies the operation being performed.  The <code>component_id</code>
 field identifies the component performing the operation.  The <code>context</code> field is
-specified by the operation in question.<a href="#section-4.1-5" class="pilcrow">¶</a></p>
-<div class="lang-tls sourcecode" id="section-4.1-6">
+specified by the operation in question.<a href="#section-3.1-5" class="pilcrow">¶</a></p>
+<div class="lang-tls sourcecode" id="section-3.1-6">
 <pre>
 struct {
   opaque label&lt;V&gt;;
   ComponentID component_id;
   opaque context&lt;V&gt;;
 } ComponentOperationLabel;
-</pre><a href="#section-4.1-6" class="pilcrow">¶</a>
+</pre><a href="#section-3.1-6" class="pilcrow">¶</a>
+</div>
+</section>
 </div>
 </section>
 </div>
 <div id="hybrid-public-key-encryption-hpke-keys">
-<section id="section-4.2">
-        <h3 id="name-hybrid-public-key-encryptio">
-<a href="#section-4.2" class="section-number selfRef">4.2. </a><a href="#name-hybrid-public-key-encryptio" class="section-name selfRef">Hybrid Public Key Encryption (HPKE) Keys</a>
-        </h3>
-<p id="section-4.2-1">This component of the API allows components to make use of the HPKE key pairs
+<section id="section-4">
+      <h2 id="name-hybrid-public-key-encryptio">
+<a href="#section-4" class="section-number selfRef">4. </a><a href="#name-hybrid-public-key-encryptio" class="section-name selfRef">Hybrid Public Key Encryption (HPKE) Keys</a>
+      </h2>
+<p id="section-4-1">This component of the API allows components to make use of the HPKE key pairs
 generated by MLS. An component identified by an CompnentID can use any HPKE
 key pair for any operation defined in <span>[<a href="#RFC9180" class="cite xref">RFC9180</a>]</span>, such as encryption,
 exporting keys and the PSK mode, as long as the <code>info</code> input to <code>Setup&lt;MODE&gt;S</code>
@@ -1442,122 +1434,122 @@ and <code>Setup&lt;MODE&gt;R</code> is set to ComponentOperationLabel with <code
 to the appopriate ComponentID. The <code>context</code> can be set to an arbitrary Context
 specified by the application designer and can be empty if not needed. For
 example, a component can use a key pair PublicKey, PrivateKey to encrypt data
-as follows:<a href="#section-4.2-1" class="pilcrow">¶</a></p>
-<div class="lang-tls sourcecode" id="section-4.2-2">
+as follows:<a href="#section-4-1" class="pilcrow">¶</a></p>
+<div class="lang-tls sourcecode" id="section-4-2">
 <pre>
 SafeEncryptWithContext(ComponentID, PublicKey, Context, Plaintext) =
     SealBase(PublicKey, ComponentOperationLabel, "", Plaintext)
 
 SafeDecryptWithContext(ComponentID, PrivateKey, Context, KEMOutput, Ciphertext) =
     OpenBase(KEMOutput, PrivateKey, ComponentOperationLabel, "", Ciphertext)
-</pre><a href="#section-4.2-2" class="pilcrow">¶</a>
+</pre><a href="#section-4-2" class="pilcrow">¶</a>
 </div>
-<p id="section-4.2-3">Where the fields of ComponentOperationLabel are set to<a href="#section-4.2-3" class="pilcrow">¶</a></p>
-<div class="lang-tls sourcecode" id="section-4.2-4">
+<p id="section-4-3">Where the fields of ComponentOperationLabel are set to<a href="#section-4-3" class="pilcrow">¶</a></p>
+<div class="lang-tls sourcecode" id="section-4-4">
 <pre>
 label = "MLS 1.0 Application"
 component_id = ComponentID
 context = Context
-</pre><a href="#section-4.2-4" class="pilcrow">¶</a>
+</pre><a href="#section-4-4" class="pilcrow">¶</a>
 </div>
 <ul class="normal ulEmpty">
-<li class="normal ulEmpty" id="section-4.2-5.1">
-            <p id="section-4.2-5.1.1">TODO: Should this use EncryptWithLabel / DecryptWithLabel?  That wouldn't
-cover other modes / exports, but you could say "mutatis mutandis".<a href="#section-4.2-5.1.1" class="pilcrow">¶</a></p>
+<li class="normal ulEmpty" id="section-4-5.1">
+          <p id="section-4-5.1.1">TODO: Should this use EncryptWithLabel / DecryptWithLabel?  That wouldn't
+cover other modes / exports, but you could say "mutatis mutandis".<a href="#section-4-5.1.1" class="pilcrow">¶</a></p>
 </li>
-        </ul>
-<p id="section-4.2-6">For operations involving the secret key, ComponentID <span class="bcp14">MUST</span> be set to the
+      </ul>
+<p id="section-4-6">For operations involving the secret key, ComponentID <span class="bcp14">MUST</span> be set to the
 ComponentID of the component performing the operation, and not to the ID of
 any other component. In particular, this means that a component cannot decrypt
 data meant for another component, while components can encrypt data that other
-components can decrypt.<a href="#section-4.2-6" class="pilcrow">¶</a></p>
-<p id="section-4.2-7">In general, a ciphertext encrypted with a PublicKey can be decrypted by any
+components can decrypt.<a href="#section-4-6" class="pilcrow">¶</a></p>
+<p id="section-4-7">In general, a ciphertext encrypted with a PublicKey can be decrypted by any
 entity who has the corresponding PrivateKey at a given point in time according
 to the MLS protocol (or application component). For convenience, the following
-list summarizes lifetimes of MLS key pairs.<a href="#section-4.2-7" class="pilcrow">¶</a></p>
+list summarizes lifetimes of MLS key pairs.<a href="#section-4-7" class="pilcrow">¶</a></p>
 <ul class="normal">
-<li class="normal" id="section-4.2-8.1">
-            <p id="section-4.2-8.1.1">The key pair of a non-blank ratchet tree node. The PrivateKey of such a key pair
+<li class="normal" id="section-4-8.1">
+          <p id="section-4-8.1.1">The key pair of a non-blank ratchet tree node. The PrivateKey of such a key pair
 is known to all members in the node’s subtree. In particular, a PrivateKey of a
 leaf node is known only to the member in that leaf. A member in the subtree
 stores the PrivateKey for a number of epochs, as long as the PublicKey does not
 change. The key pair of the root node <span class="bcp14">SHOULD NOT</span> be used, since the external key
-pair recalled below gives better security.<a href="#section-4.2-8.1.1" class="pilcrow">¶</a></p>
+pair recalled below gives better security.<a href="#section-4-8.1.1" class="pilcrow">¶</a></p>
 </li>
-          <li class="normal" id="section-4.2-8.2">
-            <p id="section-4.2-8.2.1">The external_priv, external_pub key pair used for external initialization. The
+        <li class="normal" id="section-4-8.2">
+          <p id="section-4-8.2.1">The external_priv, external_pub key pair used for external initialization. The
 external_priv key is known to all group members in the current epoch. A member
 stores external_priv only for the current epoch. Using this key pair gives
 better security guarantees than using the key pair of the root of the ratchet
-tree and should always be preferred.<a href="#section-4.2-8.2.1" class="pilcrow">¶</a></p>
+tree and should always be preferred.<a href="#section-4-8.2.1" class="pilcrow">¶</a></p>
 </li>
-          <li class="normal" id="section-4.2-8.3">
-            <p id="section-4.2-8.3.1">The init_key in a KeyPackage and the corresponding secret key. The secret key
+        <li class="normal" id="section-4-8.3">
+          <p id="section-4-8.3.1">The init_key in a KeyPackage and the corresponding secret key. The secret key
 is known only to the owner of the KeyPackage and is deleted immediately after it
-is used to join a group.<a href="#section-4.2-8.3.1" class="pilcrow">¶</a></p>
+is used to join a group.<a href="#section-4-8.3.1" class="pilcrow">¶</a></p>
 </li>
-        </ul>
+      </ul>
 </section>
 </div>
 <div id="signature-keys">
-<section id="section-4.3">
-        <h3 id="name-signature-keys">
-<a href="#section-4.3" class="section-number selfRef">4.3. </a><a href="#name-signature-keys" class="section-name selfRef">Signature Keys</a>
-        </h3>
-<p id="section-4.3-1">MLS session states contain a number of signature keys including the ones in the
+<section id="section-5">
+      <h2 id="name-signature-keys">
+<a href="#section-5" class="section-number selfRef">5. </a><a href="#name-signature-keys" class="section-name selfRef">Signature Keys</a>
+      </h2>
+<p id="section-5-1">MLS session states contain a number of signature keys including the ones in the
 LeafNode structs. Application components can safely sign content and verify
 signatures using these keys via the SafeSignWithLabel and SafeVerifyWithLabel
 functions, respectively, much like how the basic MLS protocol uses SignWithLabel
-and VerifyWithLabel.<a href="#section-4.3-1" class="pilcrow">¶</a></p>
-<p id="section-4.3-2">In more detail, a component identified by ComponentID should sign and verify
-using:<a href="#section-4.3-2" class="pilcrow">¶</a></p>
-<div class="lang-tls sourcecode" id="section-4.3-3">
+and VerifyWithLabel.<a href="#section-5-1" class="pilcrow">¶</a></p>
+<p id="section-5-2">In more detail, a component identified by ComponentID should sign and verify
+using:<a href="#section-5-2" class="pilcrow">¶</a></p>
+<div class="lang-tls sourcecode" id="section-5-3">
 <pre>
 SafeSignWithLabel(ComponentID, SignatureKey, Label, Content) =
     SignWithLabel(SignatureKey, "ComponentOperationLabel", ComponentOperationLabel)
 
 SafeVerifyWithLabel(ComponentID, VerificationKey, Label, Content, SignatureValue) =
     VerifyWithLabel(VerificationKey, "ComponentOperationLabel", ComponentOperationLabel, SignatureValue)
-</pre><a href="#section-4.3-3" class="pilcrow">¶</a>
+</pre><a href="#section-5-3" class="pilcrow">¶</a>
 </div>
-<p id="section-4.3-4">Where the fields of ComponentOperationLabel are set to<a href="#section-4.3-4" class="pilcrow">¶</a></p>
-<div class="lang-tls sourcecode" id="section-4.3-5">
+<p id="section-5-4">Where the fields of ComponentOperationLabel are set to<a href="#section-5-4" class="pilcrow">¶</a></p>
+<div class="lang-tls sourcecode" id="section-5-5">
 <pre>
 label = Label
 component_id = ComponentID
 context = Content
-</pre><a href="#section-4.3-5" class="pilcrow">¶</a>
+</pre><a href="#section-5-5" class="pilcrow">¶</a>
 </div>
-<p id="section-4.3-6">For signing operations, the ComponentID <span class="bcp14">MUST</span> be set to the ComponentID of the
+<p id="section-5-6">For signing operations, the ComponentID <span class="bcp14">MUST</span> be set to the ComponentID of the
 component performing the signature, and not to the ID of any other component.
 This means that a component cannot produce signatures in place of other
 component. However, components can verify signatures computed by other
 components. Domain separation is ensured by explicitly including the ComponentID
-with every operation.<a href="#section-4.3-6" class="pilcrow">¶</a></p>
+with every operation.<a href="#section-5-6" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="pre-shared-keys">
-<section id="section-4.4">
-        <h3 id="name-pre-shared-keys">
-<a href="#section-4.4" class="section-number selfRef">4.4. </a><a href="#name-pre-shared-keys" class="section-name selfRef">Pre-Shared Keys</a>
-        </h3>
-<p id="section-4.4-1">PSKs represent key material that is injected into the MLS key schedule when
+<section id="section-6">
+      <h2 id="name-pre-shared-keys">
+<a href="#section-6" class="section-number selfRef">6. </a><a href="#name-pre-shared-keys" class="section-name selfRef">Pre-Shared Keys</a>
+      </h2>
+<p id="section-6-1">PSKs represent key material that is injected into the MLS key schedule when
 creating or processing a commit as defined in <span><a href="https://rfc-editor.org/rfc/rfc9420#section-8.4" class="relref">Section 8.4</a> of [<a href="#RFC9420" class="cite xref">RFC9420</a>]</span>. Its
 injection into the key schedule means that all group members have to agree on
-the value of the PSK.<a href="#section-4.4-1" class="pilcrow">¶</a></p>
-<p id="section-4.4-2">While PSKs are typically cryptographic keys which due to their properties add to
+the value of the PSK.<a href="#section-6-1" class="pilcrow">¶</a></p>
+<p id="section-6-2">While PSKs are typically cryptographic keys which due to their properties add to
 the overall security of the group, the PSK mechanism can also be used to ensure
 that all members of a group agree on arbitrary pieces of data represented as
 octet strings (without the necessity of sending the data itself over the wire).
 For example, a component can use the PSK mechanism to enforce that all group
-members have access to and agree on a password or a shared file.<a href="#section-4.4-2" class="pilcrow">¶</a></p>
-<p id="section-4.4-3">This is achieved by creating a new epoch via a PSK proposal. Transitioning to
-the new epoch requires using the information agreed upon.<a href="#section-4.4-3" class="pilcrow">¶</a></p>
-<p id="section-4.4-4">To facilitate using PSKs in a safe way, this document defines a new PSKType for
+members have access to and agree on a password or a shared file.<a href="#section-6-2" class="pilcrow">¶</a></p>
+<p id="section-6-3">This is achieved by creating a new epoch via a PSK proposal. Transitioning to
+the new epoch requires using the information agreed upon.<a href="#section-6-3" class="pilcrow">¶</a></p>
+<p id="section-6-4">To facilitate using PSKs in a safe way, this document defines a new PSKType for
 application components. This provides domain separation between pre-shared keys
 used by the core MLS protocol and applications, and between those used by
-different components.<a href="#section-4.4-4" class="pilcrow">¶</a></p>
-<div class="lang-tls-presentation sourcecode" id="section-4.4-5">
+different components.<a href="#section-6-4" class="pilcrow">¶</a></p>
+<div class="lang-tls-presentation sourcecode" id="section-6-5">
 <pre>
 enum {
   // ...
@@ -1575,100 +1567,89 @@ struct {
   };
   opaque psk_nonce&lt;V&gt;;
 } PreSharedKeyID;
-</pre><a href="#section-4.4-5" class="pilcrow">¶</a>
+</pre><a href="#section-6-5" class="pilcrow">¶</a>
 </div>
 <ul class="normal ulEmpty">
-<li class="normal ulEmpty" id="section-4.4-6.1">
-            <p id="section-4.4-6.1.1">TODO: It seems like you could also do this by structuring the <code>external</code>
+<li class="normal ulEmpty" id="section-6-6.1">
+          <p id="section-6-6.1.1">TODO: It seems like you could also do this by structuring the <code>external</code>
 PSKType as (component_id, psk_id).  I guess this approach separates this API
-from other external PSKs.<a href="#section-4.4-6.1.1" class="pilcrow">¶</a></p>
+from other external PSKs.<a href="#section-6-6.1.1" class="pilcrow">¶</a></p>
 </li>
-        </ul>
+      </ul>
 </section>
 </div>
 <div id="exported-secrets">
-<section id="section-4.5">
-        <h3 id="name-exported-secrets">
-<a href="#section-4.5" class="section-number selfRef">4.5. </a><a href="#name-exported-secrets" class="section-name selfRef">Exported Secrets</a>
-        </h3>
-<p id="section-4.5-1">An application component can use MLS as a group key agreement protocol by
+<section id="section-7">
+      <h2 id="name-exported-secrets">
+<a href="#section-7" class="section-number selfRef">7. </a><a href="#name-exported-secrets" class="section-name selfRef">Exported Secrets</a>
+      </h2>
+<p id="section-7-1">An application component can use MLS as a group key agreement protocol by
 exporting symmetric keys.  Such keys can be exported (i.e. derived from MLS key
 material) in two phases per epoch: Either at the start of the epoch, or during
 the epoch. Derivation at the start of the epoch has the added advantage that the
 source key material is deleted after use, allowing the derived key material to
 be deleted later even during the same MLS epoch to achieve forward secrecy. The
 following protocol secrets can be used to derive key from for use by application
-components:<a href="#section-4.5-1" class="pilcrow">¶</a></p>
+components:<a href="#section-7-1" class="pilcrow">¶</a></p>
 <ul class="normal">
-<li class="normal" id="section-4.5-2.1">
-            <p id="section-4.5-2.1.1"><code>exporter_secret</code> at the beginning of an epoch<a href="#section-4.5-2.1.1" class="pilcrow">¶</a></p>
+<li class="normal" id="section-7-2.1">
+          <p id="section-7-2.1.1"><code>exporter_secret</code> at the beginning of an epoch<a href="#section-7-2.1.1" class="pilcrow">¶</a></p>
 </li>
-          <li class="normal" id="section-4.5-2.2">
-            <p id="section-4.5-2.2.1"><code>application_export_secret</code> during an epoch<a href="#section-4.5-2.2.1" class="pilcrow">¶</a></p>
+        <li class="normal" id="section-7-2.2">
+          <p id="section-7-2.2.1"><code>application_export_secret</code> during an epoch<a href="#section-7-2.2.1" class="pilcrow">¶</a></p>
 </li>
-        </ul>
-<p id="section-4.5-3">The <code>application_export_secret</code> is an additional secret derived from the
+      </ul>
+<p id="section-7-3">The <code>application_export_secret</code> is an additional secret derived from the
 <code>epoch_secret</code> at the beginning of the epoch in the same way as the other
-secrets listed in Table 4 of <span>[<a href="#RFC9420" class="cite xref">RFC9420</a>]</span> using the label "application_export".<a href="#section-4.5-3" class="pilcrow">¶</a></p>
-<p id="section-4.5-4">Any derivation performed by an application component either from the
+secrets listed in Table 4 of <span>[<a href="#RFC9420" class="cite xref">RFC9420</a>]</span> using the label "application_export".<a href="#section-7-3" class="pilcrow">¶</a></p>
+<p id="section-7-4">Any derivation performed by an application component either from the
 <code>exporter_secret</code> or the <code>application_export_secret</code> has to use the following
-function:<a href="#section-4.5-4" class="pilcrow">¶</a></p>
-<div class="lang-tls sourcecode" id="section-4.5-5">
+function:<a href="#section-7-4" class="pilcrow">¶</a></p>
+<div class="lang-tls sourcecode" id="section-7-5">
 <pre>
 DeriveApplicationSecret(Secret, Label) =
   ExpandWithLabel(Secret, "ApplicationExport " + ComponentID + " " + Label)
-</pre><a href="#section-4.5-5" class="pilcrow">¶</a>
+</pre><a href="#section-7-5" class="pilcrow">¶</a>
 </div>
-<p id="section-4.5-6">Where ExpandWithLabel is defined in <span><a href="https://rfc-editor.org/rfc/rfc9420#section-8" class="relref">Section 8</a> of [<a href="#RFC9420" class="cite xref">RFC9420</a>]</span> and where
+<p id="section-7-6">Where ExpandWithLabel is defined in <span><a href="https://rfc-editor.org/rfc/rfc9420#section-8" class="relref">Section 8</a> of [<a href="#RFC9420" class="cite xref">RFC9420</a>]</span> and where
 ComponentID <span class="bcp14">MUST</span> be set to the ComponentID of the component performing the
-export.<a href="#section-4.5-6" class="pilcrow">¶</a></p>
+export.<a href="#section-7-6" class="pilcrow">¶</a></p>
 <ul class="normal ulEmpty">
-<li class="normal ulEmpty" id="section-4.5-7.1">
-            <p id="section-4.5-7.1.1">TODO: This section seems over-complicated to me.  Why is it not sufficient to
+<li class="normal ulEmpty" id="section-7-7.1">
+          <p id="section-7-7.1.1">TODO: This section seems over-complicated to me.  Why is it not sufficient to
 just use the <code>exporter_secret</code>?  Or the <code>MLS-Exporter</code> mechanism with a
-label structured to include the ComponentID?<a href="#section-4.5-7.1.1" class="pilcrow">¶</a></p>
+label structured to include the ComponentID?<a href="#section-7-7.1.1" class="pilcrow">¶</a></p>
 </li>
-        </ul>
+      </ul>
 </section>
 </div>
-<div id="carrying-application-data-in-mls">
-<section id="section-4.6">
-        <h3 id="name-carrying-application-data-i">
-<a href="#section-4.6" class="section-number selfRef">4.6. </a><a href="#name-carrying-application-data-i" class="section-name selfRef">Carrying Application Data in MLS</a>
-        </h3>
-<p id="section-4.6-1">MLS provides a few extension points, including <code>extensions</code> fields on several
-objects and extensible set of proposal types.  This section defines simple,
-standard ways for applications to use these extension points.  The intent is to
-allow MLS stacks to offer one set of APIs that can serve many application needs,
-so that applications don't need to define and negotiate extensions at the MLS
-level.<a href="#section-4.6-1" class="pilcrow">¶</a></p>
-<div id="applicationdata-extension">
-<section id="section-4.6.1">
-          <h4 id="name-application_data-extension">
-<a href="#section-4.6.1" class="section-number selfRef">4.6.1. </a><a href="#name-application_data-extension" class="section-name selfRef"><code>application_data</code> Extension</a>
-          </h4>
-<p id="section-4.6.1-1">The MLS GroupContext, LeafNode, KeyPackage, and GroupInfo objects each have an
+<div id="attaching-application-data-to-mls-messages">
+<section id="section-8">
+      <h2 id="name-attaching-application-data-">
+<a href="#section-8" class="section-number selfRef">8. </a><a href="#name-attaching-application-data-" class="section-name selfRef">Attaching Application Data to MLS Messages</a>
+      </h2>
+<p id="section-8-1">The MLS GroupContext, LeafNode, KeyPackage, and GroupInfo objects each have an
 <code>extensions</code> field that can carry additional data not defined by the MLS
 specification.  The <code>application_data</code> extension provides a generic container
 that applications can use to attach application data to these messages.  Each
-usage of the extension serves a slightly different purpose:<a href="#section-4.6.1-1" class="pilcrow">¶</a></p>
+usage of the extension serves a slightly different purpose:<a href="#section-8-1" class="pilcrow">¶</a></p>
 <ul class="normal">
-<li class="normal" id="section-4.6.1-2.1">
-              <p id="section-4.6.1-2.1.1">GroupContext: Confirms that all members of the group agree on the application
-data, and automatically distributes it to new joiners.<a href="#section-4.6.1-2.1.1" class="pilcrow">¶</a></p>
+<li class="normal" id="section-8-2.1">
+          <p id="section-8-2.1.1">GroupContext: Confirms that all members of the group agree on the application
+data, and automatically distributes it to new joiners.<a href="#section-8-2.1.1" class="pilcrow">¶</a></p>
 </li>
-            <li class="normal" id="section-4.6.1-2.2">
-              <p id="section-4.6.1-2.2.1">KeyPackage and LeafNode: Associates the application data to a particular
-client, and advertises it to the other members of the group.<a href="#section-4.6.1-2.2.1" class="pilcrow">¶</a></p>
+        <li class="normal" id="section-8-2.2">
+          <p id="section-8-2.2.1">KeyPackage and LeafNode: Associates the application data to a particular
+client, and advertises it to the other members of the group.<a href="#section-8-2.2.1" class="pilcrow">¶</a></p>
 </li>
-            <li class="normal" id="section-4.6.1-2.3">
-              <p id="section-4.6.1-2.3.1">GroupInfo: Distributes the application data confidentially to the new joiners
-for whom the GroupInfo is encrypted (as a Welcome message).<a href="#section-4.6.1-2.3.1" class="pilcrow">¶</a></p>
+        <li class="normal" id="section-8-2.3">
+          <p id="section-8-2.3.1">GroupInfo: Distributes the application data confidentially to the new joiners
+for whom the GroupInfo is encrypted (as a Welcome message).<a href="#section-8-2.3.1" class="pilcrow">¶</a></p>
 </li>
-          </ul>
-<p id="section-4.6.1-3">The content of the <code>application_data</code> extension is a serialized
-ApplicationDataDictionary object:<a href="#section-4.6.1-3" class="pilcrow">¶</a></p>
-<div class="lang-tls-presentation sourcecode" id="section-4.6.1-4">
+      </ul>
+<p id="section-8-3">The content of the <code>application_data</code> extension is a serialized
+ApplicationDataDictionary object:<a href="#section-8-3" class="pilcrow">¶</a></p>
+<div class="lang-tls-presentation sourcecode" id="section-8-4">
 <pre>
 struct {
     ComponentID component_id;
@@ -1678,184 +1659,181 @@ struct {
 struct {
     ComponentData component_data&lt;V&gt;;
 } ApplicationDataDictionary;
-</pre><a href="#section-4.6.1-4" class="pilcrow">¶</a>
+</pre><a href="#section-8-4" class="pilcrow">¶</a>
 </div>
-<p id="section-4.6.1-5">The entries in the <code>component_data</code> <span class="bcp14">MUST</span> be sorted by <code>component_id</code>, and there
-<span class="bcp14">MUST</span> be at most one entry for each <code>component_id</code>.<a href="#section-4.6.1-5" class="pilcrow">¶</a></p>
-<p id="section-4.6.1-6">An <code>application_data</code> extension in a LeafNode, KeyPackage, or GroupInfo can be
+<p id="section-8-5">The entries in the <code>component_data</code> <span class="bcp14">MUST</span> be sorted by <code>component_id</code>, and there
+<span class="bcp14">MUST</span> be at most one entry for each <code>component_id</code>.<a href="#section-8-5" class="pilcrow">¶</a></p>
+<p id="section-8-6">An <code>application_data</code> extension in a LeafNode, KeyPackage, or GroupInfo can be
 set when the object is created.  An <code>application_data</code> extension in the
 GroupContext needs to be manage using the tools available to update GroupContext
 extensions: The creator of the group can set extensions unilaterally, and
 thereafter, the GroupContextExtensions proposal can be used to update
 extensions.  The ApplicationDataUpdate proposal described in
-<a href="#applicationdataupdate" class="auto internal xref">Section 4.6.3</a> provides a more efficient way to update the
-<code>application_data</code> extension.<a href="#section-4.6.1-6" class="pilcrow">¶</a></p>
+<a href="#appdataupdate" class="auto internal xref">Section 9</a> provides a more efficient way to update the
+<code>application_data</code> extension.<a href="#section-8-6" class="pilcrow">¶</a></p>
 </section>
 </div>
-<div id="applicationdata">
-<section id="section-4.6.2">
-          <h4 id="name-applicationdata">
-<a href="#section-4.6.2" class="section-number selfRef">4.6.2. </a><a href="#name-applicationdata" class="section-name selfRef">ApplicationData</a>
-          </h4>
-<p id="section-4.6.2-1">The ApplicationData proposal type allows an application component to associate
-application data to a Commit, so that the member processing the Commit knows
-that all other group members will be processing the same data.  ApplicationData
-proposals are ephemeral in the sense that they do not change any persistent
-state related to MLS, aside from their appearance in the transcript hash.<a href="#section-4.6.2-1" class="pilcrow">¶</a></p>
-<p id="section-4.6.2-2">The content of an ApplicationData proposal is the same as an <code>application_data</code>
-extension.  The proposal type is set in <a href="#iana-considerations" class="auto internal xref">Section 6</a>.<a href="#section-4.6.2-2" class="pilcrow">¶</a></p>
-<div class="lang-tls-presentation sourcecode" id="section-4.6.2-3">
-<pre>
-struct {
-    ComponentID component_id;
-    opaque data&lt;V&gt;;
-} ApplicationData;
-</pre><a href="#section-4.6.2-3" class="pilcrow">¶</a>
-</div>
-<p id="section-4.6.2-4">An ApplicationData proposal is invalid if it contains a <code>component_id</code> that is
-unknown to the application, or if the <code>application_data</code> field contains any
-<code>ComponentData</code> entry whose <code>data</code> field is considered invalid by the
-application logic registered to the indicated <code>component_id</code>.<a href="#section-4.6.2-4" class="pilcrow">¶</a></p>
-<p id="section-4.6.2-5">ApplicationData proposals <span class="bcp14">MUST</span> be processed after any default proposals (i.e.,
-those defined in <span>[<a href="#RFC9420" class="cite xref">RFC9420</a>]</span>), but before any ApplicationDataUpdate proposals.<a href="#section-4.6.2-5" class="pilcrow">¶</a></p>
-<p id="section-4.6.2-6">A client applies an ApplicationData proposal by providing the contents of the
-<code>application_data</code> field to the component identified by the <code>component_id</code>.  If
-a Commit references more than one ApplicationData proposal for the same
-<code>component_id</code> value, then they <span class="bcp14">MUST</span> be processed in the order in which they are
-specified in the Commit.<a href="#section-4.6.2-6" class="pilcrow">¶</a></p>
-</section>
-</div>
-<div id="applicationdataupdate">
-<section id="section-4.6.3">
-          <h4 id="name-applicationdataupdate">
-<a href="#section-4.6.3" class="section-number selfRef">4.6.3. </a><a href="#name-applicationdataupdate" class="section-name selfRef">ApplicationDataUpdate</a>
-          </h4>
-<p id="section-4.6.3-1">Updating the <code>application_data</code> with a GroupContextExtensions proposal is
+<div id="appdataupdate">
+<section id="section-9">
+      <h2 id="name-updating-application-data-i">
+<a href="#section-9" class="section-number selfRef">9. </a><a href="#name-updating-application-data-i" class="section-name selfRef">Updating Application Data in the GroupContext</a>
+      </h2>
+<p id="section-9-1">Updating the <code>application_data</code> with a GroupContextExtensions proposal is
 cumbersome.  The application data needs to be transmitted in its entirety, along
 with any other extensions, whether or not they are being changed.  And a
 GroupContextExtensions proposal always requires an UpdatePath, which updating
-application state never should.<a href="#section-4.6.3-1" class="pilcrow">¶</a></p>
-<p id="section-4.6.3-2">The ApplicationDataUpdate proposal allows the <code>application_data</code> extension to
+application state never should.<a href="#section-9-1" class="pilcrow">¶</a></p>
+<p id="section-9-2">The ApplicationDataUpdate proposal allows the <code>application_data</code> extension to
 be updated without these costs.  Instead of sending the whole value of the
 extension, it sends only an update, which is interpreted by the application to
 provide the new content for the <code>application_data</code> extension.  No other
-extensions are sent or updated, and no UpdatePath is required.<a href="#section-4.6.3-2" class="pilcrow">¶</a></p>
-<p id="section-4.6.3-3">```
+extensions are sent or updated, and no UpdatePath is required.<a href="#section-9-2" class="pilcrow">¶</a></p>
+<p id="section-9-3">```
 enum {
     invalid(0),
     update(1),
     remove(2),
     (255)
-} ApplicationDataUpdateOperation;<a href="#section-4.6.3-3" class="pilcrow">¶</a></p>
-<p id="section-4.6.3-4">struct {
+} ApplicationDataUpdateOperation;<a href="#section-9-3" class="pilcrow">¶</a></p>
+<p id="section-9-4">struct {
     ComponentID component_id;
-    ApplicationDataUpdateOperation op;<a href="#section-4.6.3-4" class="pilcrow">¶</a></p>
-<div class="alignLeft art-text artwork" id="section-4.6.3-5">
+    ApplicationDataUpdateOperation op;<a href="#section-9-4" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-9-5">
 <pre>
 select (ApplicationDataUpdate.op) {
     case update: opaque update&lt;V&gt;;
     case remove: struct{}
 } } ApplicationDataUpdate; ```
-</pre><a href="#section-4.6.3-5" class="pilcrow">¶</a>
+</pre><a href="#section-9-5" class="pilcrow">¶</a>
 </div>
-<p id="section-4.6.3-6">An ApplicationDataUpdate proposal is invalid if its <code>component_id</code> references a
+<p id="section-9-6">An ApplicationDataUpdate proposal is invalid if its <code>component_id</code> references a
 component that is not known to the application, or if it specifies the removal
 of state for a <code>component_id</code> that has no state present.  A proposal list is
 invalid if it includes multiple ApplicationDataUpdate proposals that <code>remove</code>
 state for the same <code>component_id</code>, or proposals that both <code>update</code> and <code>remove</code>
 state for the same <code>component_id</code>.  In other words, for a given <code>component_id</code>,
 a proposal list is valid only if it contains (a) a single <code>remove</code> operation or
-(b) one or more <code>update</code> operation.<a href="#section-4.6.3-6" class="pilcrow">¶</a></p>
+(b) one or more <code>update</code> operation.<a href="#section-9-6" class="pilcrow">¶</a></p>
 <ul class="normal ulEmpty">
-<li class="normal ulEmpty" id="section-4.6.3-7.1">
-              <p id="section-4.6.3-7.1.1">TODO: Deconflict with GroupContextExtensions.<a href="#section-4.6.3-7.1.1" class="pilcrow">¶</a></p>
+<li class="normal ulEmpty" id="section-9-7.1">
+          <p id="section-9-7.1.1">TODO: Deconflict with GroupContextExtensions.<a href="#section-9-7.1.1" class="pilcrow">¶</a></p>
 </li>
-          </ul>
-<p id="section-4.6.3-8">ApplicationDataUpdate proposals are processed after any default proposals (i.e., those
-defined in <span>[<a href="#RFC9420" class="cite xref">RFC9420</a>]</span>), and any ApplicationData proposals.<a href="#section-4.6.3-8" class="pilcrow">¶</a></p>
-<p id="section-4.6.3-9">A client applies ApplicationDataUpdate proposals by component ID.  For each
+      </ul>
+<p id="section-9-8">ApplicationDataUpdate proposals are processed after any default proposals (i.e., those
+defined in <span>[<a href="#RFC9420" class="cite xref">RFC9420</a>]</span>), and any ApplicationData proposals.<a href="#section-9-8" class="pilcrow">¶</a></p>
+<p id="section-9-9">A client applies ApplicationDataUpdate proposals by component ID.  For each
 <code>component_id</code> field that appears in an ApplicationDataUpdate proposal in the
 Commit, the client assembles a list of ApplicationDataUpdate proposals with that
 <code>component_id</code>, in the order in which they appear in the Commit, and processes
-them in the following way:<a href="#section-4.6.3-9" class="pilcrow">¶</a></p>
+them in the following way:<a href="#section-9-9" class="pilcrow">¶</a></p>
 <ul class="normal">
-<li class="normal" id="section-4.6.3-10.1">
-              <p id="section-4.6.3-10.1.1">If the list comprises a single proposal with the <code>op</code> field set to <code>remove</code>:<a href="#section-4.6.3-10.1.1" class="pilcrow">¶</a></p>
+<li class="normal" id="section-9-10.1">
+          <p id="section-9-10.1.1">If the list comprises a single proposal with the <code>op</code> field set to <code>remove</code>:<a href="#section-9-10.1.1" class="pilcrow">¶</a></p>
 <ul class="normal">
-<li class="normal" id="section-4.6.3-10.1.2.1">
-                  <p id="section-4.6.3-10.1.2.1.1">If there is an entry in the <code>component_states</code> vector in the
+<li class="normal" id="section-9-10.1.2.1">
+              <p id="section-9-10.1.2.1.1">If there is an entry in the <code>component_states</code> vector in the
 <code>application_state</code> extension with the specified <code>component_id</code>, remove
-it.<a href="#section-4.6.3-10.1.2.1.1" class="pilcrow">¶</a></p>
+it.<a href="#section-9-10.1.2.1.1" class="pilcrow">¶</a></p>
 </li>
-                <li class="normal" id="section-4.6.3-10.1.2.2">
-                  <p id="section-4.6.3-10.1.2.2.1">Otherwise, the proposal is invalid.<a href="#section-4.6.3-10.1.2.2.1" class="pilcrow">¶</a></p>
-</li>
-              </ul>
-</li>
-            <li class="normal" id="section-4.6.3-10.2">
-              <p id="section-4.6.3-10.2.1">If the list comprises one or more proposals, all with <code>op</code> field set to
-<code>update</code>:<a href="#section-4.6.3-10.2.1" class="pilcrow">¶</a></p>
-<ul class="normal">
-<li class="normal" id="section-4.6.3-10.2.2.1">
-                  <p id="section-4.6.3-10.2.2.1.1">Provide the application logic registered to the <code>component_id</code> value with
-the content of the <code>update</code> field from each proposal, in the order
-specified.<a href="#section-4.6.3-10.2.2.1.1" class="pilcrow">¶</a></p>
-</li>
-                <li class="normal" id="section-4.6.3-10.2.2.2">
-                  <p id="section-4.6.3-10.2.2.2.1">The application logic returns either an opaque value <code>new_data</code> that will be
-stored as the new application data for this component, or else an
-indication that it considers this update invalid.<a href="#section-4.6.3-10.2.2.2.1" class="pilcrow">¶</a></p>
-</li>
-                <li class="normal" id="section-4.6.3-10.2.2.3">
-                  <p id="section-4.6.3-10.2.2.3.1">If the application logic considers the update invalid, the MLS client <span class="bcp14">MUST</span>
-consider the proposal list invalid.<a href="#section-4.6.3-10.2.2.3.1" class="pilcrow">¶</a></p>
-</li>
-                <li class="normal" id="section-4.6.3-10.2.2.4">
-                  <p id="section-4.6.3-10.2.2.4.1">If no <code>application_data</code> extension is present in the GroupContext, add one
-to the end of the <code>extensions</code> list in the GroupContext.<a href="#section-4.6.3-10.2.2.4.1" class="pilcrow">¶</a></p>
-</li>
-                <li class="normal" id="section-4.6.3-10.2.2.5">
-                  <p id="section-4.6.3-10.2.2.5.1">If there is an entry in the <code>component_data</code> vector in the
-<code>application_data</code> extension with the specified <code>component_id</code>, then set
-its <code>data</code> field to the specified <code>new_data</code>.<a href="#section-4.6.3-10.2.2.5.1" class="pilcrow">¶</a></p>
-</li>
-                <li class="normal" id="section-4.6.3-10.2.2.6">
-                  <p id="section-4.6.3-10.2.2.6.1">Otherwise, insert a new entry in the <code>component_states</code> vector with the
-specified <code>component_id</code> and the <code>data</code> field set to the <code>new_data</code>
-value.  The new entry is inserted at the proper point to keep the
-<code>component_states</code> vector sorted by <code>component_id</code>.<a href="#section-4.6.3-10.2.2.6.1" class="pilcrow">¶</a></p>
-</li>
-              </ul>
-</li>
-            <li class="normal" id="section-4.6.3-10.3">
-              <p id="section-4.6.3-10.3.1">Otherwise, the proposal list is invalid.<a href="#section-4.6.3-10.3.1" class="pilcrow">¶</a></p>
+            <li class="normal" id="section-9-10.1.2.2">
+              <p id="section-9-10.1.2.2.1">Otherwise, the proposal is invalid.<a href="#section-9-10.1.2.2.1" class="pilcrow">¶</a></p>
 </li>
           </ul>
+</li>
+        <li class="normal" id="section-9-10.2">
+          <p id="section-9-10.2.1">If the list comprises one or more proposals, all with <code>op</code> field set to
+<code>update</code>:<a href="#section-9-10.2.1" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-9-10.2.2.1">
+              <p id="section-9-10.2.2.1.1">Provide the application logic registered to the <code>component_id</code> value with
+the content of the <code>update</code> field from each proposal, in the order
+specified.<a href="#section-9-10.2.2.1.1" class="pilcrow">¶</a></p>
+</li>
+            <li class="normal" id="section-9-10.2.2.2">
+              <p id="section-9-10.2.2.2.1">The application logic returns either an opaque value <code>new_data</code> that will be
+stored as the new application data for this component, or else an
+indication that it considers this update invalid.<a href="#section-9-10.2.2.2.1" class="pilcrow">¶</a></p>
+</li>
+            <li class="normal" id="section-9-10.2.2.3">
+              <p id="section-9-10.2.2.3.1">If the application logic considers the update invalid, the MLS client <span class="bcp14">MUST</span>
+consider the proposal list invalid.<a href="#section-9-10.2.2.3.1" class="pilcrow">¶</a></p>
+</li>
+            <li class="normal" id="section-9-10.2.2.4">
+              <p id="section-9-10.2.2.4.1">If no <code>application_data</code> extension is present in the GroupContext, add one
+to the end of the <code>extensions</code> list in the GroupContext.<a href="#section-9-10.2.2.4.1" class="pilcrow">¶</a></p>
+</li>
+            <li class="normal" id="section-9-10.2.2.5">
+              <p id="section-9-10.2.2.5.1">If there is an entry in the <code>component_data</code> vector in the
+<code>application_data</code> extension with the specified <code>component_id</code>, then set
+its <code>data</code> field to the specified <code>new_data</code>.<a href="#section-9-10.2.2.5.1" class="pilcrow">¶</a></p>
+</li>
+            <li class="normal" id="section-9-10.2.2.6">
+              <p id="section-9-10.2.2.6.1">Otherwise, insert a new entry in the <code>component_states</code> vector with the
+specified <code>component_id</code> and the <code>data</code> field set to the <code>new_data</code>
+value.  The new entry is inserted at the proper point to keep the
+<code>component_states</code> vector sorted by <code>component_id</code>.<a href="#section-9-10.2.2.6.1" class="pilcrow">¶</a></p>
+</li>
+          </ul>
+</li>
+        <li class="normal" id="section-9-10.3">
+          <p id="section-9-10.3.1">Otherwise, the proposal list is invalid.<a href="#section-9-10.3.1" class="pilcrow">¶</a></p>
+</li>
+      </ul>
 <ul class="normal ulEmpty">
-<li class="normal ulEmpty" id="section-4.6.3-11.1">
-              <p id="section-4.6.3-11.1.1">TODO: An alternative design here would be to have the <code>update</code> operation
+<li class="normal ulEmpty" id="section-9-11.1">
+          <p id="section-9-11.1.1">NOTE: An alternative design here would be to have the <code>update</code> operation
 simply set the new value for the <code>application_data</code> GCE, instead of sending a
 diff.  This would be simpler in that the MLS stack wouldn't have to ask the
 application for the new state value, and would discourage applications from
 storing large state in the GroupContext directly (which bloats Welcome
 messages).  It would effectively require the state in the GroupContext to be a
-hash of the real state.  This pushes some complexity onto the application,
-since the application has to define a hashing algorithm, and could make
-debugging more complex.<a href="#section-4.6.3-11.1.1" class="pilcrow">¶</a></p>
+hash of the real state, to avoid large ApplicationDataUpdate proposals.  This
+pushes some complexity onto the application, since the application has to
+define a hashing algorithm, and define its own scheme for initializing new
+joiners.<a href="#section-9-11.1.1" class="pilcrow">¶</a></p>
 </li>
-          </ul>
+      </ul>
 </section>
 </div>
-</section>
+<div id="attaching-application-data-to-a-commit">
+<section id="section-10">
+      <h2 id="name-attaching-application-data-t">
+<a href="#section-10" class="section-number selfRef">10. </a><a href="#name-attaching-application-data-t" class="section-name selfRef">Attaching Application Data to a Commit</a>
+      </h2>
+<p id="section-10-1">The ApplicationData proposal type allows an application component to associate
+application data to a Commit, so that the member processing the Commit knows
+that all other group members will be processing the same data.  ApplicationData
+proposals are ephemeral in the sense that they do not change any persistent
+state related to MLS, aside from their appearance in the transcript hash.<a href="#section-10-1" class="pilcrow">¶</a></p>
+<p id="section-10-2">The content of an ApplicationData proposal is the same as an <code>application_data</code>
+extension.  The proposal type is set in <a href="#iana-considerations" class="auto internal xref">Section 12</a>.<a href="#section-10-2" class="pilcrow">¶</a></p>
+<div class="lang-tls-presentation sourcecode" id="section-10-3">
+<pre>
+struct {
+    ComponentID component_id;
+    opaque data&lt;V&gt;;
+} ApplicationData;
+</pre><a href="#section-10-3" class="pilcrow">¶</a>
 </div>
+<p id="section-10-4">An ApplicationData proposal is invalid if it contains a <code>component_id</code> that is
+unknown to the application, or if the <code>application_data</code> field contains any
+<code>ComponentData</code> entry whose <code>data</code> field is considered invalid by the
+application logic registered to the indicated <code>component_id</code>.<a href="#section-10-4" class="pilcrow">¶</a></p>
+<p id="section-10-5">ApplicationData proposals <span class="bcp14">MUST</span> be processed after any default proposals (i.e.,
+those defined in <span>[<a href="#RFC9420" class="cite xref">RFC9420</a>]</span>), but before any ApplicationDataUpdate proposals.<a href="#section-10-5" class="pilcrow">¶</a></p>
+<p id="section-10-6">A client applies an ApplicationData proposal by providing the contents of the
+<code>application_data</code> field to the component identified by the <code>component_id</code>.  If
+a Commit references more than one ApplicationData proposal for the same
+<code>component_id</code> value, then they <span class="bcp14">MUST</span> be processed in the order in which they are
+specified in the Commit.<a href="#section-10-6" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="security-considerations">
-<section id="section-5">
+<section id="section-11">
       <h2 id="name-security-considerations">
-<a href="#section-5" class="section-number selfRef">5. </a><a href="#name-security-considerations" class="section-name selfRef">Security Considerations</a>
+<a href="#section-11" class="section-number selfRef">11. </a><a href="#name-security-considerations" class="section-name selfRef">Security Considerations</a>
       </h2>
-<p id="section-5-1">The API defined in this document provides the following security guarantee: If
+<p id="section-11-1">The API defined in this document provides the following security guarantee: If
 an application uses MLS and all its components use this API, then the security
 guarantees of the base MLS protocol and the security guarantees of the
 components, each analyzed in isolation, still hold for the composed protocol. In
@@ -1865,37 +1843,37 @@ possible that some combination of components  (the developers of which did not k
 about each other) impedes the security of the base MLS protocol or any used
 component. No further analysis of the combination is necessary. This also means
 that any security vulnerabilities introduced by one component do not spread to
-other component or the base MLS protocol.<a href="#section-5-1" class="pilcrow">¶</a></p>
+other component or the base MLS protocol.<a href="#section-11-1" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="iana-considerations">
-<section id="section-6">
+<section id="section-12">
       <h2 id="name-iana-considerations">
-<a href="#section-6" class="section-number selfRef">6. </a><a href="#name-iana-considerations" class="section-name selfRef">IANA Considerations</a>
+<a href="#section-12" class="section-number selfRef">12. </a><a href="#name-iana-considerations" class="section-name selfRef">IANA Considerations</a>
       </h2>
-<p id="section-6-1">TODO:<a href="#section-6-1" class="pilcrow">¶</a></p>
+<p id="section-12-1">TODO:<a href="#section-12-1" class="pilcrow">¶</a></p>
 <ul class="normal">
-<li class="normal" id="section-6-2.1">
-          <p id="section-6-2.1.1">Register <code>application_data</code> extension<a href="#section-6-2.1.1" class="pilcrow">¶</a></p>
+<li class="normal" id="section-12-2.1">
+          <p id="section-12-2.1.1">Register <code>application_data</code> extension<a href="#section-12-2.1.1" class="pilcrow">¶</a></p>
 </li>
-        <li class="normal" id="section-6-2.2">
-          <p id="section-6-2.2.1">Register ApplicationData proposal<a href="#section-6-2.2.1" class="pilcrow">¶</a></p>
+        <li class="normal" id="section-12-2.2">
+          <p id="section-12-2.2.1">Register ApplicationData proposal<a href="#section-12-2.2.1" class="pilcrow">¶</a></p>
 </li>
-        <li class="normal" id="section-6-2.3">
-          <p id="section-6-2.3.1">Register ApplicationDataUpdate proposal<a href="#section-6-2.3.1" class="pilcrow">¶</a></p>
+        <li class="normal" id="section-12-2.3">
+          <p id="section-12-2.3.1">Register ApplicationDataUpdate proposal<a href="#section-12-2.3.1" class="pilcrow">¶</a></p>
 </li>
       </ul>
 </section>
 </div>
 <div id="sec-combined-references">
-<section id="section-7">
+<section id="section-13">
       <h2 id="name-references">
-<a href="#section-7" class="section-number selfRef">7. </a><a href="#name-references" class="section-name selfRef">References</a>
+<a href="#section-13" class="section-number selfRef">13. </a><a href="#name-references" class="section-name selfRef">References</a>
       </h2>
 <div id="sec-normative-references">
-<section id="section-7.1">
+<section id="section-13.1">
         <h3 id="name-normative-references">
-<a href="#section-7.1" class="section-number selfRef">7.1. </a><a href="#name-normative-references" class="section-name selfRef">Normative References</a>
+<a href="#section-13.1" class="section-number selfRef">13.1. </a><a href="#name-normative-references" class="section-name selfRef">Normative References</a>
         </h3>
 <dl class="references">
 <dt id="RFC2119">[RFC2119]</dt>
@@ -1918,9 +1896,9 @@ other component or the base MLS protocol.<a href="#section-5-1" class="pilcrow">
 </section>
 </div>
 <div id="sec-informative-references">
-<section id="section-7.2">
+<section id="section-13.2">
         <h3 id="name-informative-references">
-<a href="#section-7.2" class="section-number selfRef">7.2. </a><a href="#name-informative-references" class="section-name selfRef">Informative References</a>
+<a href="#section-13.2" class="section-number selfRef">13.2. </a><a href="#name-informative-references" class="section-name selfRef">Informative References</a>
         </h3>
 <dl class="references">
 <dt id="I-D.mls-architecture">[I-D.mls-architecture]</dt>
