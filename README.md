@@ -1,6 +1,6 @@
-# Using Messaging Layer Security to Synchronize Application State
+# A Safe Application Interface to Messaging Layer Security
 
-This is the working area for the individual Internet-Draft, "Using Messaging Layer Security to Synchronize Application State".
+This is the working area for the individual Internet-Draft, "A Safe Application Interface to Messaging Layer Security".
 
 * [Editor's Copy](https://bifurcation.github.io/mls-appsync/#go.draft-barnes-mls-appsync.html)
 * [Datatracker Page](https://datatracker.ietf.org/doc/draft-barnes-mls-appsync)
