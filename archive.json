@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2024-12-12T00:21:31.434742+00:00",
+  "timestamp": "2024-12-15T00:24:01.076815+00:00",
   "repo": "bifurcation/mls-appsync",
   "labels": [
     {
@@ -56,21 +56,21 @@
       "id": "PR_kwDOMTH8rM52Bk9x",
       "title": "remove the options for different structures of state",
       "url": "https://github.com/bifurcation/mls-appsync/pull/1",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "rohanmahy",
       "authorAssociation": "COLLABORATOR",
       "assignees": [],
       "labels": [],
       "body": "While I was the original proponent of being able to make semantic changes inside an application-specific state-blob, the particulars of the different state types and patching procedures was a distraction from the overall concept of per-application state and the AppSync proposal.\r\n\r\nThis PR simply removes the inner-state semantics and assume each applicationId has an opaque state blob.\r\n",
       "createdAt": "2024-07-21T22:28:27Z",
-      "updatedAt": "2024-11-18T23:12:12Z",
+      "updatedAt": "2024-12-12T21:44:54Z",
       "baseRepository": "bifurcation/mls-appsync",
       "baseRefName": "main",
       "baseRefOid": "6a7ae5273a315692759690376be028053e442cdb",
       "headRepository": "rohanmahy/mls-appsync",
       "headRefName": "opaque-state",
       "headRefOid": "e1970072b175d1917cbe0089517c9ade9e49a74f",
-      "closedAt": null,
+      "closedAt": "2024-12-12T21:44:54Z",
       "mergedAt": null,
       "mergedBy": null,
       "mergeCommit": null,
@@ -319,6 +319,34 @@
           ]
         }
       ]
+    },
+    {
+      "number": 3,
+      "id": "PR_kwDOMTH8rM6FEvWH",
+      "title": "Refactor to an \"App API\" specification",
+      "url": "https://github.com/bifurcation/mls-appsync/pull/3",
+      "state": "MERGED",
+      "author": "bifurcation",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [],
+      "body": "",
+      "createdAt": "2024-12-12T21:45:15Z",
+      "updatedAt": "2024-12-12T21:45:21Z",
+      "baseRepository": "bifurcation/mls-appsync",
+      "baseRefName": "main",
+      "baseRefOid": "6a7ae5273a315692759690376be028053e442cdb",
+      "headRepository": "bifurcation/mls-appsync",
+      "headRefName": "app-api",
+      "headRefOid": "563259c4d74727586ae0ba2002b607d52c636fea",
+      "closedAt": "2024-12-12T21:45:21Z",
+      "mergedAt": "2024-12-12T21:45:21Z",
+      "mergedBy": "bifurcation",
+      "mergeCommit": {
+        "oid": "66b688245240099ae39a30f3d52848f5fe846b47"
+      },
+      "comments": [],
+      "reviews": []
     }
   ]
 }
