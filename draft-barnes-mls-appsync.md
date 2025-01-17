@@ -401,18 +401,13 @@ MUST be at most one entry for each `component_id`.
 
 An `application_data` extension in a LeafNode, KeyPackage, or GroupInfo can be
 set when the object is created.  An `application_data` extension in the
-GroupContext needs to be manage using the tools available to update GroupContext
-extensions: The creator of the group can set extensions unilaterally, and
-thereafter, the GroupContextExtensions proposal can be used to update
-extensions.  The AppDataUpdate proposal described in
-{{appdataupdate}} provides a more efficient way to update the
-`application_data` extension.
+GroupContext needs to be managed using the tools available to update GroupContext extensions. The creator of the group can set extensions unilaterally. Thereafter, the AppDataUpdate proposal described in the next section is used to update the `application_data` extension.
 
 # Updating Application Data in the GroupContext {#appdataupdate}
 
 Updating the `application_data` with a GroupContextExtensions proposal is
-cumbersome.  The application data needs to be transmitted in its entirety, along
-with any other extensions, whether or not they are being changed.  And a
+cumbersome.  The application data needs to be transmitted in its entirety,
+along with any other extensions, whether or not they are being changed.  And a
 GroupContextExtensions proposal always requires an UpdatePath, which updating
 application state never should.
 
@@ -450,10 +445,22 @@ state for the same `component_id`.  In other words, for a given `component_id`,
 a proposal list is valid only if it contains (a) a single `remove` operation or
 (b) one or more `update` operation.
 
-> TODO: Deconflict with GroupContextExtensions.
-
 AppDataUpdate proposals are processed after any default proposals (i.e., those
-defined in {{RFC9420}}), and any AppEphemeral proposals (defined in {{app-ephemeral}}).
+defined in {{RFC9420}}), and any AppEphemeral proposals (defined in
+{{app-ephemeral}}).
+
+When an MLS group contains the AppDataUpdate proposal type in the
+`proposal_types` list in the group's `required_capabilities` extension, a
+GroupContextExtensions proposal MUST NOT add, remove, or modify the
+`application_data` GroupContext extension. In other words, when every member of
+the group supports the AppDataUpdate proposal, a GroupContextExtensions proposal
+could be sent to update some other extension(s), but the `application_data`
+GroupContext extension, if it exists, is left as it was.
+
+A commit can contain a GroupContextExtensions proposal which modifies
+GroupContext extensions other than `application_data`, and can be followed by
+zero or more AppDataUpdate proposals.
+An AppDataUpdate proposal can be sent by an external sender.
 
 A client applies AppDataUpdate proposals by component ID.  For each
 `component_id` field that appears in an AppDataUpdate proposal in the
@@ -539,6 +546,9 @@ A client applies an AppEphemeral proposal by providing the contents of the
 a Commit references more than one AppEphemeral proposal for the same
 `component_id` value, then they MUST be processed in the order in which they are
 specified in the Commit.
+
+AppEphemeral proposals can be sent by external senders. They do not require an
+UpdatePath.
 
 # Security Considerations
 
