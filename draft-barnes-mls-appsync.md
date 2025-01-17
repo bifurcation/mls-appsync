@@ -167,9 +167,9 @@ separation.
 A component ID is a four-byte value that uniquely identifies a component within
 the scope of an application.
 
-```
+~~~
 uint32 ComponentID;
-```
+~~~
 
 > TODO: What are the uniqueness requirements on these?  It seems like the more
 > diversity, the better.  For example, if a ComponentID is reused across
@@ -422,7 +422,7 @@ extension, it sends only an update, which is interpreted by the application to
 provide the new content for the `application_data` extension.  No other
 extensions are sent or updated, and no UpdatePath is required.
 
-```
+~~~
 enum {
     invalid(0),
     update(1),
@@ -439,7 +439,7 @@ struct {
         case remove: struct{}
     }
 } AppDataUpdate;
-```
+~~~
 
 An AppDataUpdate proposal is invalid if its `component_id` references a
 component that is not known to the application, or if it specifies the removal
