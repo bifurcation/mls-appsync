@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-01-16T00:19:42.096089+00:00",
+  "timestamp": "2025-01-19T00:21:20.689446+00:00",
   "repo": "bifurcation/mls-appsync",
   "labels": [
     {
@@ -345,6 +345,32 @@
       "mergeCommit": {
         "oid": "66b688245240099ae39a30f3d52848f5fe846b47"
       },
+      "comments": [],
+      "reviews": []
+    },
+    {
+      "number": 4,
+      "id": "PR_kwDOMTH8rM6IJggs",
+      "title": "Rename ApplicationData*",
+      "url": "https://github.com/bifurcation/mls-appsync/pull/4",
+      "state": "OPEN",
+      "author": "rohanmahy",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Rename the Application* proposals and related struct\r\n- ApplicationDataDictionary  -> AppDataDictionary (struct)\r\n- ApplicationDataUpdate      -> AppDataUpdate\r\n- ApplicationData            -> AppEphemeral (proposal)\r\n    \r\nAdded an internal forward reference to the AppEphemeral proposal on first use.\r\n\r\nReplaced some instances of ``` with ~~~\r\n\r\nDeconflict with GroupContextExtensions",
+      "createdAt": "2025-01-17T12:11:00Z",
+      "updatedAt": "2025-01-17T15:43:36Z",
+      "baseRepository": "bifurcation/mls-appsync",
+      "baseRefName": "main",
+      "baseRefOid": "72548aee0ccb764b2b89c97e72ee3347e87d0508",
+      "headRepository": "bifurcation/mls-appsync",
+      "headRefName": "rohan/naming",
+      "headRefOid": "87bd5dc3c08fb71aa6b40655cf25384deff91133",
+      "closedAt": null,
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
       "comments": [],
       "reviews": []
     }
