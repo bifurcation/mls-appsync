@@ -208,10 +208,11 @@ as follows:
 
 ~~~ tls
 SafeEncryptWithContext(ComponentID, PublicKey, Context, Plaintext) =
-    SealBase(PublicKey, ComponentOperationLabel, "", Plaintext)
+   SealBase(PublicKey, ComponentOperationLabel, "", Plaintext)
 
-SafeDecryptWithContext(ComponentID, PrivateKey, Context, KEMOutput, Ciphertext) =
-    OpenBase(KEMOutput, PrivateKey, ComponentOperationLabel, "", Ciphertext)
+SafeDecryptWithContext(ComponentID, PrivateKey, Context,
+   KEMOutput, Ciphertext) =  OpenBase(KEMOutput, PrivateKey,
+                               ComponentOperationLabel, "", Ciphertext)
 ~~~
 
 Where the fields of ComponentOperationLabel are set to
@@ -264,10 +265,12 @@ using:
 
 ~~~ tls
 SafeSignWithLabel(ComponentID, SignatureKey, Label, Content) =
-    SignWithLabel(SignatureKey, "ComponentOperationLabel", ComponentOperationLabel)
+   SignWithLabel(SignatureKey, "ComponentOperationLabel",
+      ComponentOperationLabel)
 
-SafeVerifyWithLabel(ComponentID, VerificationKey, Label, Content, SignatureValue) =
-    VerifyWithLabel(VerificationKey, "ComponentOperationLabel", ComponentOperationLabel, SignatureValue)
+SafeVerifyWithLabel(ComponentID, VerificationKey, Label, Content,
+   SignatureValue) = VerifyWithLabel(VerificationKey,
+     "ComponentOperationLabel", ComponentOperationLabel, SignatureValue)
 ~~~
 
 Where the fields of ComponentOperationLabel are set to
@@ -354,7 +357,8 @@ function:
 
 ~~~ tls
 DeriveApplicationSecret(Secret, Label) =
-  ExpandWithLabel(Secret, "ApplicationExport " + ComponentID + " " + Label)
+  ExpandWithLabel(Secret, "ApplicationExport " +
+                  ComponentID + " " + Label)
 ~~~
 
 Where ExpandWithLabel is defined in {{Section 8 of RFC9420}} and where
@@ -431,8 +435,8 @@ struct {
 
     select (AppDataUpdate.op) {
         case update: opaque update<V>;
-        case remove: struct{}
-    }
+        case remove: struct{};
+    };
 } AppDataUpdate;
 ~~~
 
