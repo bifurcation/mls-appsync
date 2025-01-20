@@ -5,12 +5,12 @@
 Messaging Layer Security                                        J. Alwen
 Internet-Draft                                                    Amazon
 Intended status: Informational                                 R. Barnes
-Expires: 21 July 2025                                              Cisco
+Expires: 24 July 2025                                              Cisco
                                                                  R. Mahy
                                           Rohan Mahy Consulting Services
                                                             M. Mularczyk
                                                                   Amazon
-                                                         17 January 2025
+                                                         20 January 2025
 
 
         A Safe Application Interface to Messaging Layer Security
@@ -59,7 +59,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 21 July 2025.
+   This Internet-Draft will expire on 24 July 2025.
 
 Copyright Notice
 
@@ -259,10 +259,11 @@ Table of Contents
    encrypt data as follows:
 
    SafeEncryptWithContext(ComponentID, PublicKey, Context, Plaintext) =
-       SealBase(PublicKey, ComponentOperationLabel, "", Plaintext)
+      SealBase(PublicKey, ComponentOperationLabel, "", Plaintext)
 
-   SafeDecryptWithContext(ComponentID, PrivateKey, Context, KEMOutput, Ciphertext) =
-       OpenBase(KEMOutput, PrivateKey, ComponentOperationLabel, "", Ciphertext)
+   SafeDecryptWithContext(ComponentID, PrivateKey, Context,
+      KEMOutput, Ciphertext) =  OpenBase(KEMOutput, PrivateKey,
+                                  ComponentOperationLabel, "", Ciphertext)
 
    Where the fields of ComponentOperationLabel are set to
 
@@ -318,10 +319,12 @@ Table of Contents
    verify using:
 
    SafeSignWithLabel(ComponentID, SignatureKey, Label, Content) =
-       SignWithLabel(SignatureKey, "ComponentOperationLabel", ComponentOperationLabel)
+      SignWithLabel(SignatureKey, "ComponentOperationLabel",
+         ComponentOperationLabel)
 
-   SafeVerifyWithLabel(ComponentID, VerificationKey, Label, Content, SignatureValue) =
-       VerifyWithLabel(VerificationKey, "ComponentOperationLabel", ComponentOperationLabel, SignatureValue)
+   SafeVerifyWithLabel(ComponentID, VerificationKey, Label, Content,
+      SignatureValue) = VerifyWithLabel(VerificationKey,
+        "ComponentOperationLabel", ComponentOperationLabel, SignatureValue)
 
    Where the fields of ComponentOperationLabel are set to
 
@@ -409,7 +412,8 @@ Table of Contents
    following function:
 
    DeriveApplicationSecret(Secret, Label) =
-     ExpandWithLabel(Secret, "ApplicationExport " + ComponentID + " " + Label)
+     ExpandWithLabel(Secret, "ApplicationExport " +
+                     ComponentID + " " + Label)
 
    Where ExpandWithLabel is defined in Section 8 of [RFC9420] and where
    ComponentID MUST be set to the ComponentID of the component
@@ -490,8 +494,8 @@ Table of Contents
 
        select (AppDataUpdate.op) {
            case update: opaque update<V>;
-           case remove: struct{}
-       }
+           case remove: struct{};
+       };
    } AppDataUpdate;
 
    An AppDataUpdate proposal is invalid if its component_id references a
