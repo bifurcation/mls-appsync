@@ -208,11 +208,11 @@ as follows:
 
 ~~~ tls
 SafeEncryptWithContext(ComponentID, PublicKey, Context, Plaintext) =
-   SealBase(PublicKey, ComponentOperationLabel, "", Plaintext)
+  SealBase(PublicKey, ComponentOperationLabel, "", Plaintext)
 
 SafeDecryptWithContext(ComponentID, PrivateKey, Context,
-   KEMOutput, Ciphertext) =  OpenBase(KEMOutput, PrivateKey,
-                               ComponentOperationLabel, "", Ciphertext)
+  KEMOutput, Ciphertext) = OpenBase(KEMOutput, PrivateKey,
+                             ComponentOperationLabel, "", Ciphertext)
 ~~~
 
 Where the fields of ComponentOperationLabel are set to
@@ -269,8 +269,10 @@ SafeSignWithLabel(ComponentID, SignatureKey, Label, Content) =
       ComponentOperationLabel)
 
 SafeVerifyWithLabel(ComponentID, VerificationKey, Label, Content,
-   SignatureValue) = VerifyWithLabel(VerificationKey,
-     "ComponentOperationLabel", ComponentOperationLabel, SignatureValue)
+  SignatureValue) = VerifyWithLabel(VerificationKey,
+                      "ComponentOperationLabel",
+                       ComponentOperationLabel,
+                       SignatureValue)
 ~~~
 
 Where the fields of ComponentOperationLabel are set to
