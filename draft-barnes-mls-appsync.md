@@ -464,7 +464,6 @@ GroupContext extension, if it exists, is left as it was.
 A commit can contain a GroupContextExtensions proposal which modifies
 GroupContext extensions other than `application_data`, and can be followed by
 zero or more AppDataUpdate proposals.
-An AppDataUpdate proposal can be sent by an external sender.
 
 A client applies AppDataUpdate proposals by component ID.  For each
 `component_id` field that appears in an AppDataUpdate proposal in the
@@ -518,6 +517,13 @@ them in the following way:
 > pushes some complexity onto the application, since the application has to
 > define a hashing algorithm, and define its own scheme for initializing new
 > joiners.
+
+An AppDataUpdate proposal can be sent by an external sender. Likewise,
+AppDataUpdate proposals can be included in an external commit. Applications
+can make more restrictive validity rules for the update of their components,
+such that some components would not be valid at the application when sent in
+an external commit or via an external proposer.
+
 
 # Attaching Application Data to a Commit {#app-ephemeral}
 
