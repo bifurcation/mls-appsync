@@ -1732,7 +1732,9 @@ could be sent to update some other extension(s), but the <code>application_data<
 GroupContext extension, if it exists, is left as it was.<a href="#section-9-6" class="pilcrow">¶</a></p>
 <p id="section-9-7">A commit can contain a GroupContextExtensions proposal which modifies
 GroupContext extensions other than <code>application_data</code>, and can be followed by
-zero or more AppDataUpdate proposals.<a href="#section-9-7" class="pilcrow">¶</a></p>
+zero or more AppDataUpdate proposals.  This allows modifications to both the
+<code>application_data</code> extension (via AppDataUpdate) and other extensions (via
+GroupContextExtensions) in the same Commit.<a href="#section-9-7" class="pilcrow">¶</a></p>
 <p id="section-9-8">A client applies AppDataUpdate proposals by component ID.  For each
 <code>component_id</code> field that appears in an AppDataUpdate proposal in the
 Commit, the client assembles a list of AppDataUpdate proposals with that
