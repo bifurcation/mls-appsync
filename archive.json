@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-01-19T00:21:20.689446+00:00",
+  "timestamp": "2025-01-21T00:19:21.796224+00:00",
   "repo": "bifurcation/mls-appsync",
   "labels": [
     {
@@ -360,13 +360,13 @@
       "labels": [],
       "body": "Rename the Application* proposals and related struct\r\n- ApplicationDataDictionary  -> AppDataDictionary (struct)\r\n- ApplicationDataUpdate      -> AppDataUpdate\r\n- ApplicationData            -> AppEphemeral (proposal)\r\n    \r\nAdded an internal forward reference to the AppEphemeral proposal on first use.\r\n\r\nReplaced some instances of ``` with ~~~\r\n\r\nDeconflict with GroupContextExtensions",
       "createdAt": "2025-01-17T12:11:00Z",
-      "updatedAt": "2025-01-17T15:43:36Z",
+      "updatedAt": "2025-01-20T12:51:11Z",
       "baseRepository": "bifurcation/mls-appsync",
       "baseRefName": "main",
       "baseRefOid": "72548aee0ccb764b2b89c97e72ee3347e87d0508",
       "headRepository": "bifurcation/mls-appsync",
       "headRefName": "rohan/naming",
-      "headRefOid": "87bd5dc3c08fb71aa6b40655cf25384deff91133",
+      "headRefOid": "4e780f566db10477ae5434f27e0139eafc46a91e",
       "closedAt": null,
       "mergedAt": null,
       "mergedBy": null,
