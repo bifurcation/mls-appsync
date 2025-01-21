@@ -1805,7 +1805,8 @@ define a hashing algorithm, and define its own scheme for initializing new
 joiners.<a href="#section-9-10.1.1" class="pilcrow">¶</a></p>
 </li>
       </ul>
-<p id="section-9-11">An AppDataUpdate proposal can be sent by an external sender. Likewise,
+<p id="section-9-11">AppDataUpdate proposals do not require an UpdatePath.
+An AppDataUpdate proposal can be sent by an external sender. Likewise,
 AppDataUpdate proposals can be included in an external commit. Applications
 can make more restrictive validity rules for the update of their components,
 such that some components would not be valid at the application when sent in
@@ -1843,8 +1844,12 @@ those defined in <span>[<a href="#RFC9420" class="cite xref">RFC9420</a>]</span>
 a Commit references more than one AppEphemeral proposal for the same
 <code>component_id</code> value, then they <span class="bcp14">MUST</span> be processed in the order in which they are
 specified in the Commit.<a href="#section-10-6" class="pilcrow">¶</a></p>
-<p id="section-10-7">AppEphemeral proposals can be sent by external senders. They do not require an
-UpdatePath.<a href="#section-10-7" class="pilcrow">¶</a></p>
+<p id="section-10-7">AppEphemeral proposals do not require an UpdatePath.
+An AppEphemeral proposal can be sent by an external sender. Likewise,
+AppEphemeral proposals can be included in an external commit. Applications
+can make more restrictive validity rules for ephemeral updates of their
+components, such that some components would not be valid at the application when
+sent in an external commit or via an external proposer.<a href="#section-10-7" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="security-considerations">
