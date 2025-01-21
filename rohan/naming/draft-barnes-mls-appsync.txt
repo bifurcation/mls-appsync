@@ -5,12 +5,12 @@
 Messaging Layer Security                                        J. Alwen
 Internet-Draft                                                    Amazon
 Intended status: Informational                                 R. Barnes
-Expires: 24 July 2025                                              Cisco
+Expires: 25 July 2025                                              Cisco
                                                                  R. Mahy
                                           Rohan Mahy Consulting Services
                                                             M. Mularczyk
                                                                   Amazon
-                                                         20 January 2025
+                                                         21 January 2025
 
 
         A Safe Application Interface to Messaging Layer Security
@@ -59,7 +59,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 24 July 2025.
+   This Internet-Draft will expire on 25 July 2025.
 
 Copyright Notice
 
@@ -523,8 +523,7 @@ Table of Contents
 
    A commit can contain a GroupContextExtensions proposal which modifies
    GroupContext extensions other than application_data, and can be
-   followed by zero or more AppDataUpdate proposals.  An AppDataUpdate
-   proposal can be sent by an external sender.
+   followed by zero or more AppDataUpdate proposals.
 
    A client applies AppDataUpdate proposals by component ID.  For each
    component_id field that appears in an AppDataUpdate proposal in the
@@ -582,6 +581,13 @@ Table of Contents
       This pushes some complexity onto the application, since the
       application has to define a hashing algorithm, and define its own
       scheme for initializing new joiners.
+
+   An AppDataUpdate proposal can be sent by an external sender.
+   Likewise, AppDataUpdate proposals can be included in an external
+   commit.  Applications can make more restrictive validity rules for
+   the update of their components, such that some components would not
+   be valid at the application when sent in an external commit or via an
+   external proposer.
 
 10.  Attaching Application Data to a Commit
 
