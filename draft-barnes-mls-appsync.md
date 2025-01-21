@@ -147,10 +147,10 @@ themselves:
 - An `application_data` extension type that associates application data with MLS
   messages, or with the state of the group.
 
-- An ApplicationData proposal type that enables arbitrary application data to
+- An AppEphemeral proposal type that enables arbitrary application data to
   be associated to a Commit.
 
-- An ApplicationDataUpdate proposal type that enables efficient updates to
+- An AppDataUpdate proposal type that enables efficient updates to
   an `application_data` GroupContext extension.
 
 As with the above, information carried in these proposals and extension marked
@@ -167,9 +167,9 @@ separation.
 A component ID is a four-byte value that uniquely identifies a component within
 the scope of an application.
 
-```
+~~~
 uint32 ComponentID;
-```
+~~~
 
 > TODO: What are the uniqueness requirements on these?  It seems like the more
 > diversity, the better.  For example, if a ComponentID is reused across
@@ -208,10 +208,11 @@ as follows:
 
 ~~~ tls
 SafeEncryptWithContext(ComponentID, PublicKey, Context, Plaintext) =
-    SealBase(PublicKey, ComponentOperationLabel, "", Plaintext)
+  SealBase(PublicKey, ComponentOperationLabel, "", Plaintext)
 
-SafeDecryptWithContext(ComponentID, PrivateKey, Context, KEMOutput, Ciphertext) =
-    OpenBase(KEMOutput, PrivateKey, ComponentOperationLabel, "", Ciphertext)
+SafeDecryptWithContext(ComponentID, PrivateKey, Context,
+  KEMOutput, Ciphertext) = OpenBase(KEMOutput, PrivateKey,
+                             ComponentOperationLabel, "", Ciphertext)
 ~~~
 
 Where the fields of ComponentOperationLabel are set to
@@ -264,10 +265,14 @@ using:
 
 ~~~ tls
 SafeSignWithLabel(ComponentID, SignatureKey, Label, Content) =
-    SignWithLabel(SignatureKey, "ComponentOperationLabel", ComponentOperationLabel)
+   SignWithLabel(SignatureKey, "ComponentOperationLabel",
+      ComponentOperationLabel)
 
-SafeVerifyWithLabel(ComponentID, VerificationKey, Label, Content, SignatureValue) =
-    VerifyWithLabel(VerificationKey, "ComponentOperationLabel", ComponentOperationLabel, SignatureValue)
+SafeVerifyWithLabel(ComponentID, VerificationKey, Label, Content,
+  SignatureValue) = VerifyWithLabel(VerificationKey,
+                      "ComponentOperationLabel",
+                       ComponentOperationLabel,
+                       SignatureValue)
 ~~~
 
 Where the fields of ComponentOperationLabel are set to
@@ -354,7 +359,8 @@ function:
 
 ~~~ tls
 DeriveApplicationSecret(Secret, Label) =
-  ExpandWithLabel(Secret, "ApplicationExport " + ComponentID + " " + Label)
+  ExpandWithLabel(Secret, "ApplicationExport " +
+                  ComponentID + " " + Label)
 ~~~
 
 Where ExpandWithLabel is defined in {{Section 8 of RFC9420}} and where
@@ -383,7 +389,7 @@ usage of the extension serves a slightly different purpose:
   for whom the GroupInfo is encrypted (as a Welcome message).
 
 The content of the `application_data` extension is a serialized
-ApplicationDataDictionary object:
+AppDataDictionary object:
 
 ~~~ tls-presentation
 struct {
@@ -393,7 +399,7 @@ struct {
 
 struct {
     ComponentData component_data<V>;
-} ApplicationDataDictionary;
+} AppDataDictionary;
 ~~~
 
 The entries in the `component_data` MUST be sorted by `component_id`, and there
@@ -401,63 +407,71 @@ MUST be at most one entry for each `component_id`.
 
 An `application_data` extension in a LeafNode, KeyPackage, or GroupInfo can be
 set when the object is created.  An `application_data` extension in the
-GroupContext needs to be manage using the tools available to update GroupContext
-extensions: The creator of the group can set extensions unilaterally, and
-thereafter, the GroupContextExtensions proposal can be used to update
-extensions.  The ApplicationDataUpdate proposal described in
-{{appdataupdate}} provides a more efficient way to update the
-`application_data` extension.
+GroupContext needs to be managed using the tools available to update GroupContext extensions. The creator of the group can set extensions unilaterally. Thereafter, the AppDataUpdate proposal described in the next section is used to update the `application_data` extension.
 
 # Updating Application Data in the GroupContext {#appdataupdate}
 
 Updating the `application_data` with a GroupContextExtensions proposal is
-cumbersome.  The application data needs to be transmitted in its entirety, along
-with any other extensions, whether or not they are being changed.  And a
+cumbersome.  The application data needs to be transmitted in its entirety,
+along with any other extensions, whether or not they are being changed.  And a
 GroupContextExtensions proposal always requires an UpdatePath, which updating
 application state never should.
 
-The ApplicationDataUpdate proposal allows the `application_data` extension to
+The AppDataUpdate proposal allows the `application_data` extension to
 be updated without these costs.  Instead of sending the whole value of the
 extension, it sends only an update, which is interpreted by the application to
 provide the new content for the `application_data` extension.  No other
 extensions are sent or updated, and no UpdatePath is required.
 
-```
+~~~
 enum {
     invalid(0),
     update(1),
     remove(2),
     (255)
-} ApplicationDataUpdateOperation;
+} AppDataUpdateOperation;
 
 struct {
     ComponentID component_id;
-    ApplicationDataUpdateOperation op;
+    AppDataUpdateOperation op;
 
-    select (ApplicationDataUpdate.op) {
+    select (AppDataUpdate.op) {
         case update: opaque update<V>;
-        case remove: struct{}
-    }
-} ApplicationDataUpdate;
-```
+        case remove: struct{};
+    };
+} AppDataUpdate;
+~~~
 
-An ApplicationDataUpdate proposal is invalid if its `component_id` references a
+An AppDataUpdate proposal is invalid if its `component_id` references a
 component that is not known to the application, or if it specifies the removal
 of state for a `component_id` that has no state present.  A proposal list is
-invalid if it includes multiple ApplicationDataUpdate proposals that `remove`
+invalid if it includes multiple AppDataUpdate proposals that `remove`
 state for the same `component_id`, or proposals that both `update` and `remove`
 state for the same `component_id`.  In other words, for a given `component_id`,
 a proposal list is valid only if it contains (a) a single `remove` operation or
 (b) one or more `update` operation.
 
-> TODO: Deconflict with GroupContextExtensions.
+AppDataUpdate proposals are processed after any default proposals (i.e., those
+defined in {{RFC9420}}), and any AppEphemeral proposals (defined in
+{{app-ephemeral}}).
 
-ApplicationDataUpdate proposals are processed after any default proposals (i.e., those
-defined in {{RFC9420}}), and any ApplicationData proposals.
+When an MLS group contains the AppDataUpdate proposal type in the
+`proposal_types` list in the group's `required_capabilities` extension, a
+GroupContextExtensions proposal MUST NOT add, remove, or modify the
+`application_data` GroupContext extension. In other words, when every member of
+the group supports the AppDataUpdate proposal, a GroupContextExtensions proposal
+could be sent to update some other extension(s), but the `application_data`
+GroupContext extension, if it exists, is left as it was.
 
-A client applies ApplicationDataUpdate proposals by component ID.  For each
-`component_id` field that appears in an ApplicationDataUpdate proposal in the
-Commit, the client assembles a list of ApplicationDataUpdate proposals with that
+A commit can contain a GroupContextExtensions proposal which modifies
+GroupContext extensions other than `application_data`, and can be followed by
+zero or more AppDataUpdate proposals.  This allows modifications to both the
+`application_data` extension (via AppDataUpdate) and other extensions (via
+GroupContextExtensions) in the same Commit.
+
+A client applies AppDataUpdate proposals by component ID.  For each
+`component_id` field that appears in an AppDataUpdate proposal in the
+Commit, the client assembles a list of AppDataUpdate proposals with that
 `component_id`, in the order in which they appear in the Commit, and processes
 them in the following way:
 
@@ -503,42 +517,57 @@ them in the following way:
 > application for the new state value, and would discourage applications from
 > storing large state in the GroupContext directly (which bloats Welcome
 > messages).  It would effectively require the state in the GroupContext to be a
-> hash of the real state, to avoid large ApplicationDataUpdate proposals.  This
+> hash of the real state, to avoid large AppDataUpdate proposals.  This
 > pushes some complexity onto the application, since the application has to
 > define a hashing algorithm, and define its own scheme for initializing new
 > joiners.
 
-# Attaching Application Data to a Commit
+AppDataUpdate proposals do not require an UpdatePath.
+An AppDataUpdate proposal can be sent by an external sender. Likewise,
+AppDataUpdate proposals can be included in an external commit. Applications
+can make more restrictive validity rules for the update of their components,
+such that some components would not be valid at the application when sent in
+an external commit or via an external proposer.
 
-The ApplicationData proposal type allows an application component to associate
+
+# Attaching Application Data to a Commit {#app-ephemeral}
+
+The AppEphemeral proposal type allows an application component to associate
 application data to a Commit, so that the member processing the Commit knows
-that all other group members will be processing the same data.  ApplicationData
+that all other group members will be processing the same data.  AppEphemeral
 proposals are ephemeral in the sense that they do not change any persistent
 state related to MLS, aside from their appearance in the transcript hash.
 
-The content of an ApplicationData proposal is the same as an `application_data`
+The content of an AppEphemeral proposal is the same as an `application_data`
 extension.  The proposal type is set in {{iana-considerations}}.
 
 ~~~ tls-presentation
 struct {
     ComponentID component_id;
     opaque data<V>;
-} ApplicationData;
+} AppEphemeral;
 ~~~
 
-An ApplicationData proposal is invalid if it contains a `component_id` that is
+An AppEphemeral proposal is invalid if it contains a `component_id` that is
 unknown to the application, or if the `application_data` field contains any
 `ComponentData` entry whose `data` field is considered invalid by the
 application logic registered to the indicated `component_id`.
 
-ApplicationData proposals MUST be processed after any default proposals (i.e.,
-those defined in {{RFC9420}}), but before any ApplicationDataUpdate proposals.
+AppEphemeral proposals MUST be processed after any default proposals (i.e.,
+those defined in {{RFC9420}}), but before any AppDataUpdate proposals.
 
-A client applies an ApplicationData proposal by providing the contents of the
+A client applies an AppEphemeral proposal by providing the contents of the
 `application_data` field to the component identified by the `component_id`.  If
-a Commit references more than one ApplicationData proposal for the same
+a Commit references more than one AppEphemeral proposal for the same
 `component_id` value, then they MUST be processed in the order in which they are
 specified in the Commit.
+
+AppEphemeral proposals do not require an UpdatePath.
+An AppEphemeral proposal can be sent by an external sender. Likewise,
+AppEphemeral proposals can be included in an external commit. Applications
+can make more restrictive validity rules for ephemeral updates of their
+components, such that some components would not be valid at the application when
+sent in an external commit or via an external proposer.
 
 # Security Considerations
 
@@ -559,8 +588,8 @@ other component or the base MLS protocol.
 TODO:
 
 * Register `application_data` extension
-* Register ApplicationData proposal
-* Register ApplicationDataUpdate proposal
+* Register AppEphemeral proposal
+* Register AppDataUpdate proposal
 
 --- back
 
