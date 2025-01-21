@@ -1441,11 +1441,11 @@ as follows:<a href="#section-4-1" class="pilcrow">¶</a></p>
 <div class="lang-tls sourcecode" id="section-4-2">
 <pre>
 SafeEncryptWithContext(ComponentID, PublicKey, Context, Plaintext) =
-   SealBase(PublicKey, ComponentOperationLabel, "", Plaintext)
+  SealBase(PublicKey, ComponentOperationLabel, "", Plaintext)
 
 SafeDecryptWithContext(ComponentID, PrivateKey, Context,
-   KEMOutput, Ciphertext) =  OpenBase(KEMOutput, PrivateKey,
-                               ComponentOperationLabel, "", Ciphertext)
+  KEMOutput, Ciphertext) = OpenBase(KEMOutput, PrivateKey,
+                             ComponentOperationLabel, "", Ciphertext)
 </pre><a href="#section-4-2" class="pilcrow">¶</a>
 </div>
 <p id="section-4-3">Where the fields of ComponentOperationLabel are set to<a href="#section-4-3" class="pilcrow">¶</a></p>
@@ -1514,8 +1514,10 @@ SafeSignWithLabel(ComponentID, SignatureKey, Label, Content) =
       ComponentOperationLabel)
 
 SafeVerifyWithLabel(ComponentID, VerificationKey, Label, Content,
-   SignatureValue) = VerifyWithLabel(VerificationKey,
-     "ComponentOperationLabel", ComponentOperationLabel, SignatureValue)
+  SignatureValue) = VerifyWithLabel(VerificationKey,
+                      "ComponentOperationLabel",
+                       ComponentOperationLabel,
+                       SignatureValue)
 </pre><a href="#section-5-3" class="pilcrow">¶</a>
 </div>
 <p id="section-5-4">Where the fields of ComponentOperationLabel are set to<a href="#section-5-4" class="pilcrow">¶</a></p>
