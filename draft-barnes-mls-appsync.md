@@ -520,6 +520,7 @@ them in the following way:
 > define a hashing algorithm, and define its own scheme for initializing new
 > joiners.
 
+AppDataUpdate proposals do not require an UpdatePath.
 An AppDataUpdate proposal can be sent by an external sender. Likewise,
 AppDataUpdate proposals can be included in an external commit. Applications
 can make more restrictive validity rules for the update of their components,
@@ -559,8 +560,12 @@ a Commit references more than one AppEphemeral proposal for the same
 `component_id` value, then they MUST be processed in the order in which they are
 specified in the Commit.
 
-AppEphemeral proposals can be sent by external senders. They do not require an
-UpdatePath.
+AppEphemeral proposals do not require an UpdatePath.
+An AppEphemeral proposal can be sent by an external sender. Likewise,
+AppEphemeral proposals can be included in an external commit. Applications
+can make more restrictive validity rules for ephemeral updates of their
+components, such that some components would not be valid at the application when
+sent in an external commit or via an external proposer.
 
 # Security Considerations
 
