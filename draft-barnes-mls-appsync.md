@@ -465,7 +465,9 @@ GroupContext extension, if it exists, is left as it was.
 
 A commit can contain a GroupContextExtensions proposal which modifies
 GroupContext extensions other than `application_data`, and can be followed by
-zero or more AppDataUpdate proposals.
+zero or more AppDataUpdate proposals.  This allows modifications to both the
+`application_data` extension (via AppDataUpdate) and other extensions (via
+GroupContextExtensions) in the same Commit.
 
 A client applies AppDataUpdate proposals by component ID.  For each
 `component_id` field that appears in an AppDataUpdate proposal in the
