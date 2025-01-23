@@ -144,14 +144,14 @@ We also define new general mechanisms that allow applications to take advantage
 of the extensibility mechanisms of MLS without having to define extensions
 themselves:
 
-- An `application_data` extension type that associates application data with MLS
+- An `app_data_dictionary` extension type that associates application data with MLS
   messages, or with the state of the group.
 
 - An AppEphemeral proposal type that enables arbitrary application data to
   be associated to a Commit.
 
 - An AppDataUpdate proposal type that enables efficient updates to
-  an `application_data` GroupContext extension.
+  an `app_data_dictionary` GroupContext extension.
 
 As with the above, information carried in these proposals and extension marked
 as belonging to a specific application component, so that components can manage
@@ -375,7 +375,7 @@ export.
 
 The MLS GroupContext, LeafNode, KeyPackage, and GroupInfo objects each have an
 `extensions` field that can carry additional data not defined by the MLS
-specification.  The `application_data` extension provides a generic container
+specification.  The `app_data_dictionary` extension provides a generic container
 that applications can use to attach application data to these messages.  Each
 usage of the extension serves a slightly different purpose:
 
@@ -388,7 +388,7 @@ usage of the extension serves a slightly different purpose:
 * GroupInfo: Distributes the application data confidentially to the new joiners
   for whom the GroupInfo is encrypted (as a Welcome message).
 
-The content of the `application_data` extension is a serialized
+The content of the `app_data_dictionary` extension is a serialized
 AppDataDictionary object:
 
 ~~~ tls-presentation
@@ -405,22 +405,22 @@ struct {
 The entries in the `component_data` MUST be sorted by `component_id`, and there
 MUST be at most one entry for each `component_id`.
 
-An `application_data` extension in a LeafNode, KeyPackage, or GroupInfo can be
-set when the object is created.  An `application_data` extension in the
-GroupContext needs to be managed using the tools available to update GroupContext extensions. The creator of the group can set extensions unilaterally. Thereafter, the AppDataUpdate proposal described in the next section is used to update the `application_data` extension.
+An `app_data_dictionary` extension in a LeafNode, KeyPackage, or GroupInfo can be
+set when the object is created.  An `app_data_dictionary` extension in the
+GroupContext needs to be managed using the tools available to update GroupContext extensions. The creator of the group can set extensions unilaterally. Thereafter, the AppDataUpdate proposal described in the next section is used to update the `app_data_dictionary` extension.
 
 # Updating Application Data in the GroupContext {#appdataupdate}
 
-Updating the `application_data` with a GroupContextExtensions proposal is
+Updating the `app_data_dictionary` with a GroupContextExtensions proposal is
 cumbersome.  The application data needs to be transmitted in its entirety,
 along with any other extensions, whether or not they are being changed.  And a
 GroupContextExtensions proposal always requires an UpdatePath, which updating
 application state never should.
 
-The AppDataUpdate proposal allows the `application_data` extension to
+The AppDataUpdate proposal allows the `app_data_dictionary` extension to
 be updated without these costs.  Instead of sending the whole value of the
 extension, it sends only an update, which is interpreted by the application to
-provide the new content for the `application_data` extension.  No other
+provide the new content for the `app_data_dictionary` extension.  No other
 extensions are sent or updated, and no UpdatePath is required.
 
 ~~~
@@ -458,15 +458,15 @@ defined in {{RFC9420}}), and any AppEphemeral proposals (defined in
 When an MLS group contains the AppDataUpdate proposal type in the
 `proposal_types` list in the group's `required_capabilities` extension, a
 GroupContextExtensions proposal MUST NOT add, remove, or modify the
-`application_data` GroupContext extension. In other words, when every member of
+`app_data_dictionary` GroupContext extension. In other words, when every member of
 the group supports the AppDataUpdate proposal, a GroupContextExtensions proposal
-could be sent to update some other extension(s), but the `application_data`
+could be sent to update some other extension(s), but the `app_data_dictionary`
 GroupContext extension, if it exists, is left as it was.
 
 A commit can contain a GroupContextExtensions proposal which modifies
-GroupContext extensions other than `application_data`, and can be followed by
+GroupContext extensions other than `app_data_dictionary`, and can be followed by
 zero or more AppDataUpdate proposals.  This allows modifications to both the
-`application_data` extension (via AppDataUpdate) and other extensions (via
+`app_data_dictionary` extension (via AppDataUpdate) and other extensions (via
 GroupContextExtensions) in the same Commit.
 
 A client applies AppDataUpdate proposals by component ID.  For each
@@ -497,11 +497,11 @@ them in the following way:
     * If the application logic considers the update invalid, the MLS client MUST
       consider the proposal list invalid.
 
-    * If no `application_data` extension is present in the GroupContext, add one
+    * If no `app_data_dictionary` extension is present in the GroupContext, add one
       to the end of the `extensions` list in the GroupContext.
 
     * If there is an entry in the `component_data` vector in the
-      `application_data` extension with the specified `component_id`, then set
+      `app_data_dictionary` extension with the specified `component_id`, then set
       its `data` field to the specified `new_data`.
 
     * Otherwise, insert a new entry in the `component_states` vector with the
@@ -512,7 +512,7 @@ them in the following way:
 * Otherwise, the proposal list is invalid.
 
 > NOTE: An alternative design here would be to have the `update` operation
-> simply set the new value for the `application_data` GCE, instead of sending a
+> simply set the new value for the `app_data_dictionary` GCE, instead of sending a
 > diff.  This would be simpler in that the MLS stack wouldn't have to ask the
 > application for the new state value, and would discourage applications from
 > storing large state in the GroupContext directly (which bloats Welcome
@@ -538,7 +538,7 @@ that all other group members will be processing the same data.  AppEphemeral
 proposals are ephemeral in the sense that they do not change any persistent
 state related to MLS, aside from their appearance in the transcript hash.
 
-The content of an AppEphemeral proposal is the same as an `application_data`
+The content of an AppEphemeral proposal is the same as an `app_data_dictionary`
 extension.  The proposal type is set in {{iana-considerations}}.
 
 ~~~ tls-presentation
@@ -549,7 +549,7 @@ struct {
 ~~~
 
 An AppEphemeral proposal is invalid if it contains a `component_id` that is
-unknown to the application, or if the `application_data` field contains any
+unknown to the application, or if the `app_data_dictionary` field contains any
 `ComponentData` entry whose `data` field is considered invalid by the
 application logic registered to the indicated `component_id`.
 
@@ -557,7 +557,7 @@ AppEphemeral proposals MUST be processed after any default proposals (i.e.,
 those defined in {{RFC9420}}), but before any AppDataUpdate proposals.
 
 A client applies an AppEphemeral proposal by providing the contents of the
-`application_data` field to the component identified by the `component_id`.  If
+`app_data_dictionary` field to the component identified by the `component_id`.  If
 a Commit references more than one AppEphemeral proposal for the same
 `component_id` value, then they MUST be processed in the order in which they are
 specified in the Commit.
@@ -587,7 +587,7 @@ other component or the base MLS protocol.
 
 TODO:
 
-* Register `application_data` extension
+* Register `app_data_dictionary` extension
 * Register AppEphemeral proposal
 * Register AppDataUpdate proposal
 
