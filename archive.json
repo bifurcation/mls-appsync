@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-01-21T00:19:21.796224+00:00",
+  "timestamp": "2025-01-23T00:19:34.264218+00:00",
   "repo": "bifurcation/mls-appsync",
   "labels": [
     {
@@ -353,26 +353,55 @@
       "id": "PR_kwDOMTH8rM6IJggs",
       "title": "Rename ApplicationData*",
       "url": "https://github.com/bifurcation/mls-appsync/pull/4",
-      "state": "OPEN",
+      "state": "MERGED",
       "author": "rohanmahy",
       "authorAssociation": "COLLABORATOR",
       "assignees": [],
       "labels": [],
-      "body": "Rename the Application* proposals and related struct\r\n- ApplicationDataDictionary  -> AppDataDictionary (struct)\r\n- ApplicationDataUpdate      -> AppDataUpdate\r\n- ApplicationData            -> AppEphemeral (proposal)\r\n    \r\nAdded an internal forward reference to the AppEphemeral proposal on first use.\r\n\r\nReplaced some instances of ``` with ~~~\r\n\r\nDeconflict with GroupContextExtensions",
+      "body": "- Rename the Application* proposals and related struct\r\n   - ApplicationDataDictionary  -> AppDataDictionary (struct)\r\n   - ApplicationDataUpdate      -> AppDataUpdate\r\n   - ApplicationData            -> AppEphemeral (proposal)\r\n- Added an internal forward reference to the AppEphemeral proposal on first use.\r\n- Deconflict with GroupContextExtensions\r\n- Clarify that AppDataUpdate can be used in external proposals and in external commits\r\n- Replaced some instances of ``` with ~~~\r\n- Added a couple of missing semicolons\r\n- Fixed some overly long lines\r\n\r\n\r\n",
       "createdAt": "2025-01-17T12:11:00Z",
-      "updatedAt": "2025-01-20T12:51:11Z",
+      "updatedAt": "2025-01-21T20:17:22Z",
       "baseRepository": "bifurcation/mls-appsync",
       "baseRefName": "main",
       "baseRefOid": "72548aee0ccb764b2b89c97e72ee3347e87d0508",
       "headRepository": "bifurcation/mls-appsync",
       "headRefName": "rohan/naming",
-      "headRefOid": "4e780f566db10477ae5434f27e0139eafc46a91e",
-      "closedAt": null,
-      "mergedAt": null,
-      "mergedBy": null,
-      "mergeCommit": null,
+      "headRefOid": "19b4c86d15ad911be20d74e941ab9359e94d267c",
+      "closedAt": "2025-01-21T20:17:22Z",
+      "mergedAt": "2025-01-21T20:17:22Z",
+      "mergedBy": "bifurcation",
+      "mergeCommit": {
+        "oid": "091710b657ecfb508a04127acc938130e536628d"
+      },
       "comments": [],
-      "reviews": []
+      "reviews": [
+        {
+          "id": "PRR_kwDOMTH8rM6Y6pjJ",
+          "commit": {
+            "abbreviatedOid": "1c00a63"
+          },
+          "author": "bifurcation",
+          "authorAssociation": "OWNER",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2025-01-21T19:22:55Z",
+          "updatedAt": "2025-01-21T20:16:56Z",
+          "comments": [
+            {
+              "originalPosition": 172,
+              "body": "Note that the implication of this instruction (and possibly a simpler way to state it) would be: If a GCE is sent, then it MUST replicate the `application_data` extension as-is, with no changes.  That is data-wasteful, but does allow them to coexist cleanly.",
+              "createdAt": "2025-01-21T19:22:55Z",
+              "updatedAt": "2025-01-21T20:16:56Z"
+            },
+            {
+              "originalPosition": 176,
+              "body": "```suggestion\r\nA commit can contain a GroupContextExtensions proposal which modifies\r\nGroupContext extensions other than `application_data`, and can be followed by\r\nzero or more AppDataUpdate proposals.  This allows modifications to both the\r\n`application_data` extension (via AppDataUpdate) and other extensions (via\r\nGroupContextExtensions) in the same Commit.\r\n```",
+              "createdAt": "2025-01-21T19:24:17Z",
+              "updatedAt": "2025-01-21T20:16:56Z"
+            }
+          ]
+        }
+      ]
     }
   ]
 }
