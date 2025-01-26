@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-01-23T00:19:34.264218+00:00",
+  "timestamp": "2025-01-26T00:19:48.863879+00:00",
   "repo": "bifurcation/mls-appsync",
   "labels": [
     {
@@ -402,6 +402,32 @@
           ]
         }
       ]
+    },
+    {
+      "number": 5,
+      "id": "PR_kwDOMTH8rM6I0pjP",
+      "title": "rename application_data extension to app_data_dictionary extension",
+      "url": "https://github.com/bifurcation/mls-appsync/pull/5",
+      "state": "OPEN",
+      "author": "rohanmahy",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "rename application_data extension to app_data_dictionary extension to match the TLS struct name",
+      "createdAt": "2025-01-23T22:11:32Z",
+      "updatedAt": "2025-01-23T22:11:33Z",
+      "baseRepository": "bifurcation/mls-appsync",
+      "baseRefName": "main",
+      "baseRefOid": "091710b657ecfb508a04127acc938130e536628d",
+      "headRepository": "bifurcation/mls-appsync",
+      "headRefName": "rename-appplication_data",
+      "headRefOid": "563d6170f8697f29cfb41c11407c0bae8e165b6e",
+      "closedAt": null,
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [],
+      "reviews": []
     }
   ]
 }
